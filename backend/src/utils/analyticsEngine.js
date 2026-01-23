@@ -57,7 +57,8 @@ export const calculateWeeklyStats = (logs) => {
       totalMinutes: 0,
       averageDailyMinutes: 0,
       daysActive: 0,
-      trend: 'stable'
+      trend: 'stable',
+      apps: []
     };
   }
 
@@ -85,11 +86,23 @@ export const calculateWeeklyStats = (logs) => {
     else if (secondHalf < firstHalf * 0.9) trend = 'decreasing';
   }
 
+  // Group by app for top apps
+  const appMap = new Map();
+  logs.forEach(log => {
+    const existing = appMap.get(log.appName) || 0;
+    appMap.set(log.appName, existing + log.minutesSpent);
+  });
+
+  const apps = Array.from(appMap.entries())
+    .map(([name, minutes]) => ({ name, minutes }))
+    .sort((a, b) => b.minutes - a.minutes);
+
   return {
     totalMinutes: Math.round(totalMinutes * 100) / 100,
     averageDailyMinutes: Math.round(averageDailyMinutes * 100) / 100,
     daysActive,
-    trend
+    trend,
+    apps
   };
 };
 

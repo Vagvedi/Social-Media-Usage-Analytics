@@ -11,14 +11,22 @@ export const createUsageLog = asyncHandler(async (req, res) => {
   const { appName, minutesSpent, date } = req.body;
   const userId = req.user.id;
 
+  // Validate inputs
+  if (!appName || !minutesSpent) {
+    return res.status(400).json({
+      success: false,
+      message: 'App name and minutes spent are required'
+    });
+  }
+
   // Normalize date (use provided date or current date)
   const logDate = date ? new Date(date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
 
-  // Check for duplicate entry
+  // Check for duplicate entry (case-insensitive app name)
   const existing = await UsageLog.findOne({
     where: {
       userId,
-      appName,
+      appName: appName.trim(),
       date: logDate
     }
   });
@@ -30,19 +38,29 @@ export const createUsageLog = asyncHandler(async (req, res) => {
     });
   }
 
-  // Create usage log
-  const usageLog = await UsageLog.create({
-    userId,
-    appName,
-    minutesSpent: parseFloat(minutesSpent),
-    date: logDate
-  });
+  try {
+    // Create usage log
+    const usageLog = await UsageLog.create({
+      userId,
+      appName: appName.trim(),
+      minutesSpent: parseFloat(minutesSpent),
+      date: logDate
+    });
 
-  res.status(201).json({
-    success: true,
-    message: 'Usage log created successfully',
-    data: { usageLog }
-  });
+    res.status(201).json({
+      success: true,
+      message: 'Usage log created successfully',
+      data: { usageLog }
+    });
+  } catch (error) {
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).json({
+        success: false,
+        message: 'A usage entry for this app and date already exists'
+      });
+    }
+    throw error;
+  }
 });
 
 /**

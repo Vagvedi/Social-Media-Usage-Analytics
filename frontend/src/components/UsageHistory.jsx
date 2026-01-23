@@ -27,7 +27,7 @@ export const UsageHistory = ({ onUpdate }) => {
   };
 
   const handleEdit = (log) => {
-    setEditingId(log._id);
+    setEditingId(log.id);
     setEditForm({
       appName: log.appName,
       minutesSpent: log.minutesSpent.toString(),
@@ -42,6 +42,7 @@ export const UsageHistory = ({ onUpdate }) => {
 
   const handleUpdate = async (id) => {
     try {
+      setError('');
       await usageAPI.update(id, {
         appName: editForm.appName.trim(),
         minutesSpent: parseFloat(editForm.minutesSpent),
@@ -49,7 +50,7 @@ export const UsageHistory = ({ onUpdate }) => {
       });
 
       setEditingId(null);
-      fetchLogs();
+      await fetchLogs();
       if (onUpdate) onUpdate();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update entry');
@@ -62,8 +63,9 @@ export const UsageHistory = ({ onUpdate }) => {
     }
 
     try {
+      setError('');
       await usageAPI.delete(id);
-      fetchLogs();
+      await fetchLogs();
       if (onUpdate) onUpdate();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete entry');
@@ -113,10 +115,10 @@ export const UsageHistory = ({ onUpdate }) => {
             <tbody>
               {logs.map((log) => (
                 <tr
-                  key={log._id}
+                  key={log.id}
                   className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                 >
-                  {editingId === log._id ? (
+                  {editingId === log.id ? (
                     <>
                       <td className="py-3 px-4">
                         <input
@@ -149,7 +151,7 @@ export const UsageHistory = ({ onUpdate }) => {
                       <td className="py-3 px-4">
                         <div className="flex justify-end space-x-2">
                           <button
-                            onClick={() => handleUpdate(log._id)}
+                            onClick={() => handleUpdate(log.id)}
                             className="text-sm text-green-600 dark:text-green-400 hover:underline"
                           >
                             Save
@@ -180,7 +182,7 @@ export const UsageHistory = ({ onUpdate }) => {
                             Edit
                           </button>
                           <button
-                            onClick={() => handleDelete(log._id)}
+                            onClick={() => handleDelete(log.id)}
                             className="text-sm text-red-600 dark:text-red-400 hover:underline"
                           >
                             Delete

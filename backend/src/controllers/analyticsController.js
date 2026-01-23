@@ -110,7 +110,10 @@ export const getDashboard = asyncHandler(async (req, res) => {
         ...riskScore,
         message: getMotivationalMessage(riskScore.level)
       },
-      topApps: weeklyStats.apps?.slice(0, 5) || [],
+      topApps: weeklyStats.apps?.slice(0, 5).map(app => ({
+        name: app.name,
+        minutes: app.minutes
+      })) || [],
       recommendations,
       charts: {
         daily: dailyTimeSeries,
