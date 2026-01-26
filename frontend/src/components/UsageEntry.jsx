@@ -19,8 +19,11 @@ export const UsageEntry = ({ onSuccess }) => {
     appName: '',
     customAppName: '',
     minutesSpent: '',
-    date: format(new Date(), 'yyyy-MM-dd')
+    date: format(new Date(), 'yyyy-MM-dd'),
+    intention: '',
+    foundIt: null
   });
+  const [showIntention, setShowIntention] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -58,7 +61,9 @@ export const UsageEntry = ({ onSuccess }) => {
       await usageAPI.create({
         appName: finalAppName,
         minutesSpent: parseFloat(formData.minutesSpent),
-        date: formData.date
+        date: formData.date,
+        intention: formData.intention ? formData.intention.trim() : null,
+        foundIt: formData.foundIt !== null ? formData.foundIt : null
       });
 
       setSuccess('Usage entry added successfully!');
@@ -66,8 +71,11 @@ export const UsageEntry = ({ onSuccess }) => {
         appName: '',
         customAppName: '',
         minutesSpent: '',
-        date: format(new Date(), 'yyyy-MM-dd')
+        date: format(new Date(), 'yyyy-MM-dd'),
+        intention: '',
+        foundIt: null
       });
+      setShowIntention(false);
 
       if (onSuccess) {
         setTimeout(() => {
@@ -175,6 +183,84 @@ export const UsageEntry = ({ onSuccess }) => {
               max={format(new Date(), 'yyyy-MM-dd')}
             />
           </div>
+        </div>
+
+        {/* Intention Tracking (Optional) */}
+        <div className="border-t pt-4 mt-4">
+          <div className="flex items-center justify-between mb-3">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Track Your Intention (Optional)
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowIntention(!showIntention)}
+              className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
+            >
+              {showIntention ? 'Hide' : 'Add Intention'}
+            </button>
+          </div>
+          
+          {showIntention && (
+            <div className="space-y-3 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg">
+              <div>
+                <label htmlFor="intention" className="block text-sm font-medium mb-2">
+                  What were you looking for when you opened this app?
+                </label>
+                <input
+                  type="text"
+                  id="intention"
+                  name="intention"
+                  value={formData.intention}
+                  onChange={handleChange}
+                  className="input-field"
+                  placeholder="e.g., to relax, check messages, find inspiration..."
+                  maxLength={200}
+                />
+              </div>
+              {formData.intention && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Did you find it?
+                  </label>
+                  <div className="flex space-x-4">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="foundIt"
+                        value="true"
+                        checked={formData.foundIt === true}
+                        onChange={() => setFormData({ ...formData, foundIt: true })}
+                        className="mr-2"
+                      />
+                      Yes
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="foundIt"
+                        value="false"
+                        checked={formData.foundIt === false}
+                        onChange={() => setFormData({ ...formData, foundIt: false })}
+                        className="mr-2"
+                      />
+                      No
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="foundIt"
+                        value="null"
+                        checked={formData.foundIt === null}
+                        onChange={() => setFormData({ ...formData, foundIt: null })}
+                        className="mr-2"
+                      />
+                      Not sure
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <button

@@ -44,6 +44,17 @@ const UsageLog = sequelize.define('UsageLog', {
     type: DataTypes.DATEONLY,
     allowNull: false,
     defaultValue: DataTypes.NOW
+  },
+  intention: {
+    type: DataTypes.STRING(200),
+    allowNull: true,
+    field: 'intention'
+  },
+  foundIt: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+    defaultValue: null,
+    field: 'found_it'
   }
 }, {
   tableName: 'usage_logs',
