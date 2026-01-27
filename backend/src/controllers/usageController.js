@@ -8,7 +8,7 @@ import { Op } from 'sequelize';
  * @access  Private
  */
 export const createUsageLog = asyncHandler(async (req, res) => {
-  const { appName, minutesSpent, date } = req.body;
+  const { appName, minutesSpent, date, intention, foundIt } = req.body;
   const userId = req.user.id;
 
   // Validate inputs
@@ -44,7 +44,9 @@ export const createUsageLog = asyncHandler(async (req, res) => {
       userId,
       appName: appName.trim(),
       minutesSpent: parseFloat(minutesSpent),
-      date: logDate
+      date: logDate,
+      intention: intention ? intention.trim() : null,
+      foundIt: foundIt !== undefined ? Boolean(foundIt) : null
     });
 
     res.status(201).json({
@@ -137,7 +139,7 @@ export const getUsageLogById = asyncHandler(async (req, res) => {
 export const updateUsageLog = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
-  const { appName, minutesSpent, date } = req.body;
+  const { appName, minutesSpent, date, intention, foundIt } = req.body;
 
   // Find log and verify ownership
   const usageLog = await UsageLog.findOne({
@@ -178,6 +180,8 @@ export const updateUsageLog = asyncHandler(async (req, res) => {
   if (date) {
     usageLog.date = new Date(date).toISOString().split('T')[0];
   }
+  if (intention !== undefined) usageLog.intention = intention ? intention.trim() : null;
+  if (foundIt !== undefined) usageLog.foundIt = foundIt !== null ? Boolean(foundIt) : null;
 
   await usageLog.save();
 

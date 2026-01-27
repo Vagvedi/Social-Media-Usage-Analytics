@@ -1,21 +1,40 @@
 import { useState } from 'react';
 import { usageAPI } from '../services/api';
 import { format } from 'date-fns';
+import { formatMinutesToHours } from '../utils/timeFormatter';
+
+const APP_OPTIONS = [
+  'Instagram',
+  'Facebook',
+  'Twitter (X)',
+  'TikTok',
+  'YouTube',
+  'Snapchat',
+  'WhatsApp',
+  'Other'
+];
 
 export const UsageEntry = ({ onSuccess }) => {
   const [formData, setFormData] = useState({
     appName: '',
+    customAppName: '',
     minutesSpent: '',
-    date: format(new Date(), 'yyyy-MM-dd')
+    date: format(new Date(), 'yyyy-MM-dd'),
+    intention: '',
+    foundIt: null
   });
+  const [showIntention, setShowIntention] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value,
+      // Reset customAppName if appName changes from "Other"
+      ...(name === 'appName' && value !== 'Other' ? { customAppName: '' } : {})
     });
     setError('');
     setSuccess('');
@@ -28,18 +47,35 @@ export const UsageEntry = ({ onSuccess }) => {
     setLoading(true);
 
     try {
+      // Use customAppName if "Other" is selected, otherwise use appName
+      const finalAppName = formData.appName === 'Other' 
+        ? formData.customAppName.trim() 
+        : formData.appName.trim();
+
+      if (!finalAppName) {
+        setError('Please enter an app name');
+        setLoading(false);
+        return;
+      }
+
       await usageAPI.create({
-        appName: formData.appName.trim(),
+        appName: finalAppName,
         minutesSpent: parseFloat(formData.minutesSpent),
-        date: formData.date
+        date: formData.date,
+        intention: formData.intention ? formData.intention.trim() : null,
+        foundIt: formData.foundIt !== null ? formData.foundIt : null
       });
 
       setSuccess('Usage entry added successfully!');
       setFormData({
         appName: '',
+        customAppName: '',
         minutesSpent: '',
-        date: format(new Date(), 'yyyy-MM-dd')
+        date: format(new Date(), 'yyyy-MM-dd'),
+        intention: '',
+        foundIt: null
       });
+      setShowIntention(false);
 
       if (onSuccess) {
         setTimeout(() => {
@@ -52,6 +88,10 @@ export const UsageEntry = ({ onSuccess }) => {
       setLoading(false);
     }
   };
+
+  // Calculate preview time
+  const previewMinutes = parseFloat(formData.minutesSpent) || 0;
+  const timePreview = previewMinutes > 0 ? formatMinutesToHours(previewMinutes) : null;
 
   return (
     <div className="card">
@@ -75,17 +115,33 @@ export const UsageEntry = ({ onSuccess }) => {
             <label htmlFor="appName" className="block text-sm font-medium mb-2">
               App Name
             </label>
-            <input
-              type="text"
+            <select
               id="appName"
               name="appName"
               value={formData.appName}
               onChange={handleChange}
               className="input-field"
-              placeholder="e.g., Instagram, TikTok"
               required
-              maxLength={100}
-            />
+            >
+              <option value="">Select an app</option>
+              {APP_OPTIONS.map((app) => (
+                <option key={app} value={app}>
+                  {app}
+                </option>
+              ))}
+            </select>
+            {formData.appName === 'Other' && (
+              <input
+                type="text"
+                name="customAppName"
+                value={formData.customAppName}
+                onChange={handleChange}
+                className="input-field mt-2"
+                placeholder="Enter app name"
+                required
+                maxLength={100}
+              />
+            )}
           </div>
 
           <div>
@@ -105,6 +161,11 @@ export const UsageEntry = ({ onSuccess }) => {
               max="1440"
               step="0.01"
             />
+            {timePreview && (
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                You spent: <span className="font-medium">{timePreview}</span>
+              </p>
+            )}
           </div>
 
           <div>
@@ -122,6 +183,84 @@ export const UsageEntry = ({ onSuccess }) => {
               max={format(new Date(), 'yyyy-MM-dd')}
             />
           </div>
+        </div>
+
+        {/* Intention Tracking (Optional) */}
+        <div className="border-t pt-4 mt-4">
+          <div className="flex items-center justify-between mb-3">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Track Your Intention (Optional)
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowIntention(!showIntention)}
+              className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
+            >
+              {showIntention ? 'Hide' : 'Add Intention'}
+            </button>
+          </div>
+          
+          {showIntention && (
+            <div className="space-y-3 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg">
+              <div>
+                <label htmlFor="intention" className="block text-sm font-medium mb-2">
+                  What were you looking for when you opened this app?
+                </label>
+                <input
+                  type="text"
+                  id="intention"
+                  name="intention"
+                  value={formData.intention}
+                  onChange={handleChange}
+                  className="input-field"
+                  placeholder="e.g., to relax, check messages, find inspiration..."
+                  maxLength={200}
+                />
+              </div>
+              {formData.intention && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Did you find it?
+                  </label>
+                  <div className="flex space-x-4">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="foundIt"
+                        value="true"
+                        checked={formData.foundIt === true}
+                        onChange={() => setFormData({ ...formData, foundIt: true })}
+                        className="mr-2"
+                      />
+                      Yes
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="foundIt"
+                        value="false"
+                        checked={formData.foundIt === false}
+                        onChange={() => setFormData({ ...formData, foundIt: false })}
+                        className="mr-2"
+                      />
+                      No
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="foundIt"
+                        value="null"
+                        checked={formData.foundIt === null}
+                        onChange={() => setFormData({ ...formData, foundIt: null })}
+                        className="mr-2"
+                      />
+                      Not sure
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <button

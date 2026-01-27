@@ -1,13 +1,25 @@
 import { useState, useEffect } from 'react';
 import { usageAPI } from '../services/api';
 import { format } from 'date-fns';
+import { formatMinutesToHours } from '../utils/timeFormatter';
+
+const APP_OPTIONS = [
+  'Instagram',
+  'Facebook',
+  'Twitter (X)',
+  'TikTok',
+  'YouTube',
+  'Snapchat',
+  'WhatsApp',
+  'Other'
+];
 
 export const UsageHistory = ({ onUpdate }) => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [editingId, setEditingId] = useState(null);
-  const [editForm, setEditForm] = useState({ appName: '', minutesSpent: '', date: '' });
+  const [editForm, setEditForm] = useState({ appName: '', customAppName: '', minutesSpent: '', date: '' });
 
   useEffect(() => {
     fetchLogs();
@@ -28,8 +40,11 @@ export const UsageHistory = ({ onUpdate }) => {
 
   const handleEdit = (log) => {
     setEditingId(log.id);
+    // Check if the app name is in the predefined list
+    const isPredefined = APP_OPTIONS.includes(log.appName);
     setEditForm({
-      appName: log.appName,
+      appName: isPredefined ? log.appName : 'Other',
+      customAppName: isPredefined ? '' : log.appName,
       minutesSpent: log.minutesSpent.toString(),
       date: format(new Date(log.date), 'yyyy-MM-dd')
     });
@@ -43,8 +58,18 @@ export const UsageHistory = ({ onUpdate }) => {
   const handleUpdate = async (id) => {
     try {
       setError('');
+      // Use customAppName if "Other" is selected, otherwise use appName
+      const finalAppName = editForm.appName === 'Other' 
+        ? editForm.customAppName.trim() 
+        : editForm.appName.trim();
+
+      if (!finalAppName) {
+        setError('Please enter an app name');
+        return;
+      }
+
       await usageAPI.update(id, {
-        appName: editForm.appName.trim(),
+        appName: finalAppName,
         minutesSpent: parseFloat(editForm.minutesSpent),
         date: editForm.date
       });
@@ -130,12 +155,31 @@ export const UsageHistory = ({ onUpdate }) => {
                         />
                       </td>
                       <td className="py-3 px-4">
-                        <input
-                          type="text"
+                        <select
                           value={editForm.appName}
-                          onChange={(e) => setEditForm({ ...editForm, appName: e.target.value })}
+                          onChange={(e) => setEditForm({ 
+                            ...editForm, 
+                            appName: e.target.value,
+                            ...(e.target.value !== 'Other' ? { customAppName: '' } : {})
+                          })}
                           className="input-field text-sm"
-                        />
+                        >
+                          <option value="">Select an app</option>
+                          {APP_OPTIONS.map((app) => (
+                            <option key={app} value={app}>
+                              {app}
+                            </option>
+                          ))}
+                        </select>
+                        {editForm.appName === 'Other' && (
+                          <input
+                            type="text"
+                            value={editForm.customAppName}
+                            onChange={(e) => setEditForm({ ...editForm, customAppName: e.target.value })}
+                            className="input-field text-sm mt-2"
+                            placeholder="Enter app name"
+                          />
+                        )}
                       </td>
                       <td className="py-3 px-4">
                         <input
@@ -171,8 +215,7 @@ export const UsageHistory = ({ onUpdate }) => {
                         {format(new Date(log.date), 'MMM dd, yyyy')}
                       </td>
                       <td className="py-3 px-4 font-medium">{log.appName}</td>
-                      <td className="py-3 px-4 text-right">{Number(log.minutesSpent || 0).toFixed(2)
-                      }</td>
+                      <td className="py-3 px-4 text-right">{formatMinutesToHours(Number(log.minutesSpent || 0))}</td>
                       <td className="py-3 px-4">
                         <div className="flex justify-end space-x-3">
                           <button

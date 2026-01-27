@@ -6,6 +6,9 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
+import { DigitalMirrorMode } from './pages/DigitalMirrorMode';
+import { FutureRegretSimulator } from './pages/FutureRegretSimulator';
+import { BeforeAfterTracking } from './pages/BeforeAfterTracking';
 import { useEffect } from 'react';
 
 function App() {
@@ -39,6 +42,36 @@ function App() {
           <ProtectedRoute>
             <Layout>
               <Dashboard />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/mirror"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <DigitalMirrorMode />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/regret-simulator"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <FutureRegretSimulator />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/before-after"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <BeforeAfterTracking />
             </Layout>
           </ProtectedRoute>
         }
