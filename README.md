@@ -37,7 +37,7 @@ This platform provides ethical, privacy-focused social media usage tracking and 
 - **bcryptjs** - Password hashing
 - **express-validator** - Input validation
 
-## 📋 Prerequisites
+##  Prerequisites
 
 Before you begin, ensure you have the following installed:
 
