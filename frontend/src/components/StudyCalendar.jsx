@@ -28,8 +28,8 @@ export const StudyCalendar = () => {
         studyAPI.getGoals()
       ]);
 
-      setSessions(sessionsRes.data.data || []);
-      setGoals(goalsRes.data.data || []);
+      setSessions(Array.isArray(sessionsRes.data.data) ? sessionsRes.data.data : []);
+      setGoals(Array.isArray(goalsRes.data.data) ? goalsRes.data.data : []);
     } catch (error) {
       console.error('Error fetching calendar data:', error);
     } finally {
@@ -119,10 +119,12 @@ export const StudyCalendar = () => {
 
   const getEventsForDate = (date) => {
     const dateStr = date.toISOString().split('T')[0];
-    const daySessions = sessions.filter(session => 
+    const safeSessions = Array.isArray(sessions) ? sessions : [];
+    const safeGoals = Array.isArray(goals) ? goals : [];
+    const daySessions = safeSessions.filter(session => 
       new Date(session.startTime).toISOString().split('T')[0] === dateStr
     );
-    const dayGoals = goals.filter(goal => 
+    const dayGoals = safeGoals.filter(goal => 
       new Date(goal.deadline).toISOString().split('T')[0] === dateStr
     );
     return { sessions: daySessions, goals: dayGoals };
