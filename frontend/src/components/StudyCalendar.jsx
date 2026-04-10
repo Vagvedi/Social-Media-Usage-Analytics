@@ -28,8 +28,8 @@ export const StudyCalendar = () => {
         studyAPI.getGoals()
       ]);
 
-      setSessions(sessionsRes.data?.data?.sessions || []);
-      setGoals(goalsRes.data?.data || []);
+      setSessions(sessionsRes.data.data || []);
+      setGoals(goalsRes.data.data || []);
     } catch (error) {
       console.error('Error fetching calendar data:', error);
     } finally {
@@ -118,20 +118,13 @@ export const StudyCalendar = () => {
   };
 
   const getEventsForDate = (date) => {
-    const isSameDay = (d1, d2) => {
-      if (!d1 || !d2) return false;
-      const date1 = new Date(d1);
-      const date2 = new Date(d2);
-      if (isNaN(date1.getTime()) || isNaN(date2.getTime())) return false;
-      return date1.getFullYear() === date2.getFullYear() &&
-             date1.getMonth() === date2.getMonth() &&
-             date1.getDate() === date2.getDate();
-    };
-
-    const safeSessions = Array.isArray(sessions) ? sessions : [];
-    const safeGoals = Array.isArray(goals) ? goals : [];
-    const daySessions = safeSessions.filter(session => isSameDay(session.startTime, date));
-    const dayGoals = safeGoals.filter(goal => isSameDay(goal.deadline, date));
+    const dateStr = date.toISOString().split('T')[0];
+    const daySessions = sessions.filter(session => 
+      new Date(session.startTime).toISOString().split('T')[0] === dateStr
+    );
+    const dayGoals = goals.filter(goal => 
+      new Date(goal.deadline).toISOString().split('T')[0] === dateStr
+    );
     return { sessions: daySessions, goals: dayGoals };
   };
 
@@ -155,10 +148,7 @@ export const StudyCalendar = () => {
   };
 
   const formatTime = (dateString) => {
-    if (!dateString) return '';
-    const d = new Date(dateString);
-    if (isNaN(d.getTime())) return '';
-    return d.toLocaleTimeString('en-US', {
+    return new Date(dateString).toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit'
     });
@@ -167,9 +157,7 @@ export const StudyCalendar = () => {
   const calculateStudyHours = (date) => {
     const events = getEventsForDate(date);
     return events.sessions.reduce((total, session) => {
-      if (!session.endTime || !session.startTime) return total;
       const duration = new Date(session.endTime) - new Date(session.startTime);
-      if (isNaN(duration)) return total;
       return total + (duration / (1000 * 60 * 60));
     }, 0);
   };
