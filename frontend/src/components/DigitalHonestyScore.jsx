@@ -20,7 +20,7 @@ export const DigitalHonestyScore = ({ entries }) => {
 
   return (
     <div className="card">
-      <h3 className="text-lg font-semibold mb-4">Digital Honesty Score</h3>
+      <h3 className="text-lg font-black text-slate-800 mb-4">Digital Honesty Score</h3>
       <div className="flex items-center space-x-4 mb-3">
         <div className={`text-4xl font-bold ${getScoreColor(score)}`}>
           {score}%
@@ -34,7 +34,7 @@ export const DigitalHonestyScore = ({ entries }) => {
           </div>
         </div>
       </div>
-      <p className="text-sm text-gray-600 dark:text-gray-400">
+      <p className="text-sm text-slate-600 font-medium">
         You are consistently tracking your usage.
       </p>
     </div>

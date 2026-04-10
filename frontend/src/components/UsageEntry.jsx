@@ -95,16 +95,16 @@ export const UsageEntry = ({ onSuccess }) => {
 
   return (
     <div className="card">
-      <h3 className="text-lg font-semibold mb-4">Add Usage Entry</h3>
+      <h3 className="text-lg font-black text-slate-800 mb-4">Add Usage Entry</h3>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-400 rounded-lg">
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl animate-fade-in font-medium">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="mb-4 p-3 bg-green-100 dark:bg-green-900/30 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-400 rounded-lg">
+        <div className="mb-4 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl animate-fade-in font-medium">
           {success}
         </div>
       )}
@@ -162,8 +162,8 @@ export const UsageEntry = ({ onSuccess }) => {
               step="0.01"
             />
             {timePreview && (
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                You spent: <span className="font-medium">{timePreview}</span>
+              <p className="mt-2 text-sm text-slate-600 font-medium">
+                You spent: <span className="font-black text-ocean-600">{timePreview}</span>
               </p>
             )}
           </div>
@@ -188,13 +188,13 @@ export const UsageEntry = ({ onSuccess }) => {
         {/* Intention Tracking (Optional) */}
         <div className="border-t pt-4 mt-4">
           <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className="text-sm font-black text-slate-700">
               Track Your Intention (Optional)
             </label>
             <button
               type="button"
               onClick={() => setShowIntention(!showIntention)}
-              className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
+              className="text-sm font-black text-pink-500 hover:text-pink-600 transition-colors uppercase tracking-wider"
             >
               {showIntention ? 'Hide' : 'Add Intention'}
             </button>

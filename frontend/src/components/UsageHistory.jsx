@@ -101,7 +101,7 @@ export const UsageHistory = ({ onUpdate }) => {
     return (
       <div className="card">
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500"></div>
         </div>
       </div>
     );
@@ -109,9 +109,9 @@ export const UsageHistory = ({ onUpdate }) => {
 
   return (
     <div className="card">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">Usage History</h3>
-        <button onClick={fetchLogs} className="btn-secondary text-sm">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-black text-slate-800">Usage History</h3>
+        <button onClick={fetchLogs} className="btn-secondary text-sm py-2 px-6">
           Refresh
         </button>
       </div>
@@ -130,11 +130,11 @@ export const UsageHistory = ({ onUpdate }) => {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200 dark:border-gray-700">
-                <th className="text-left py-3 px-4 font-medium">Date</th>
-                <th className="text-left py-3 px-4 font-medium">App</th>
-                <th className="text-right py-3 px-4 font-medium">Minutes</th>
-                <th className="text-right py-3 px-4 font-medium">Actions</th>
+              <tr className="border-b-2 border-sky-100">
+                <th className="text-left py-4 px-4 font-black text-slate-700 uppercase tracking-wider text-xs">Date</th>
+                <th className="text-left py-4 px-4 font-black text-slate-700 uppercase tracking-wider text-xs">App</th>
+                <th className="text-right py-4 px-4 font-black text-slate-700 uppercase tracking-wider text-xs">Minutes</th>
+                <th className="text-right py-4 px-4 font-black text-slate-700 uppercase tracking-wider text-xs">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -220,13 +220,13 @@ export const UsageHistory = ({ onUpdate }) => {
                         <div className="flex justify-end space-x-3">
                           <button
                             onClick={() => handleEdit(log)}
-                            className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
+                            className="text-sm font-black text-ocean-600 hover:text-pink-500 transition-colors uppercase tracking-widest"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => handleDelete(log.id)}
-                            className="text-sm text-red-600 dark:text-red-400 hover:underline"
+                            className="text-sm font-black text-rose-500 hover:text-rose-600 transition-colors uppercase tracking-widest"
                           >
                             Delete
                           </button>

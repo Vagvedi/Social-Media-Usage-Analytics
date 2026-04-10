@@ -1,27 +1,189 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   body {
-    @apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200;
+    @apply bg-gradient-to-br from-sky-100 via-yellow-100 to-pink-100 text-slate-900 transition-all duration-300 min-h-screen;
+    font-family: 'Inter', sans-serif;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+  
+  * {
+    @apply transition-colors duration-300;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-sky-200/20;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-sky-400 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-pink-400;
   }
 }
 
 @layer components {
+  /* Premium 'Happy' Button Styles */
   .btn-primary {
-    @apply px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply px-8 py-4 bg-gradient-to-r from-pink-500 via-pink-400 to-ocean-400 text-white font-bold rounded-2xl transition-all duration-500 transform hover:scale-105 hover:shadow-glow hover:from-pink-600 hover:via-pink-500 hover:to-ocean-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden;
+    letter-spacing: 0.05em;
+    box-shadow: 0 10px 25px rgba(254, 158, 199, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.4);
+  }
+
+  .btn-primary::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent transform -translate-x-full transition-transform duration-1000 ease-in-out;
+  }
+
+  .btn-primary:hover::before {
+    @apply translate-x-full;
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 20px 40px rgba(254, 158, 199, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.5), 0 0 20px rgba(68, 172, 255, 0.3);
   }
 
   .btn-secondary {
-    @apply px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-medium rounded-lg transition-colors duration-200;
+    @apply px-8 py-4 bg-gradient-to-r from-sky-100 via-white to-sky-50 text-ocean-600 font-bold rounded-2xl transition-all duration-500 transform hover:scale-105 hover:shadow-2xl border border-sky-300/50 relative overflow-hidden;
+    letter-spacing: 0.025em;
+    box-shadow: 0 8px 20px rgba(68, 172, 255, 0.15);
   }
 
+  .btn-secondary:hover {
+    @apply from-sky-200 via-white to-sky-100 border-sky-400/60;
+    box-shadow: 0 15px 35px rgba(68, 172, 255, 0.25), 0 0 15px rgba(254, 158, 199, 0.1);
+  }
+
+  /* Premium 'Happy' Input Styles */
   .input-field {
-    @apply w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-colors duration-200;
+    @apply w-full px-5 py-4 bg-white/40 backdrop-blur-xl border border-sky-200 rounded-2xl text-slate-800 placeholder-sky-400 focus:ring-4 focus:ring-pink-400/30 focus:border-pink-400 outline-none transition-all duration-500 hover:bg-white/60 hover:border-sky-300 hover:shadow-3xl;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
   }
 
+  .input-field:focus {
+    @apply bg-white/80 border-pink-400 shadow-4xl ring-4 ring-pink-400/20;
+    box-shadow: 0 0 0 4px rgba(254, 158, 199, 0.1), 0 25px 50px rgba(68, 172, 255, 0.15);
+  }
+
+  /* Premium 'Happy' Card Styles */
   .card {
-    @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 transition-colors duration-200;
+    @apply bg-white/60 backdrop-blur-3xl rounded-3xl shadow-3xl p-8 border border-white/80 transition-all duration-700 hover:shadow-4xl hover:bg-white/80 hover:border-white hover:scale-[1.03] animate-fade-in;
+    box-shadow: 0 20px 40px rgba(68, 172, 255, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.8);
+  }
+
+  .card:hover {
+    box-shadow: 0 40px 80px rgba(254, 158, 199, 0.15), 0 0 0 2px rgba(255, 255, 255, 1);
+  }
+
+  .glass-card {
+    @apply bg-white/40 backdrop-blur-3xl rounded-3xl shadow-4xl border border-white/60 transition-all duration-700 hover:shadow-glow hover:bg-white/60 hover:scale-[1.04] hover:border-white/80;
+    box-shadow: 0 30px 60px rgba(68, 172, 255, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.5);
+  }
+
+  .glass-card:hover {
+    box-shadow: 0 40px 80px rgba(254, 158, 199, 0.1), 0 0 30px rgba(68, 172, 255, 0.15), 0 0 0 3px rgba(255, 255, 255, 0.8);
+  }
+
+  /* Premium 'Happy' Navbar */
+  .navbar-blur {
+    @apply bg-white/40 backdrop-blur-3xl border-b border-white/60 shadow-xl transition-all duration-500 hover:bg-white/60;
+  }
+
+  .nav-link {
+    @apply relative text-ocean-600 hover:text-pink-500 font-bold transition-all duration-500 px-6 py-3 rounded-2xl hover:bg-white/40 hover:scale-110 hover:shadow-lg relative overflow-hidden;
+    letter-spacing: 0.05em;
+  }
+
+  .nav-link::after {
+    content: '';
+    @apply absolute bottom-2 left-4 right-4 h-1 bg-gradient-to-r from-pink-400 to-ocean-400 transform scale-x-0 transition-transform duration-700 rounded-full;
+  }
+
+  .nav-link:hover::after {
+    @apply scale-x-100;
+    box-shadow: 0 0 20px rgba(254, 158, 199, 0.6);
+  }
+
+  /* Premium Stat Cards */
+  .stat-card {
+    @apply glass-card p-8 text-center hover:scale-110 transform transition-all duration-700 hover:shadow-glow relative overflow-hidden;
+  }
+
+  /* Premium Chart Container */
+  .chart-container {
+    @apply bg-white/50 backdrop-blur-3xl rounded-3xl p-8 border border-white/80 hover:bg-white/70 hover:shadow-4xl transition-all duration-700 hover:scale-[1.02] relative overflow-hidden;
+    box-shadow: 0 25px 60px rgba(68, 172, 255, 0.05), 0 0 0 1px rgba(255, 255, 255, 0.8);
+  }
+
+  /* Premium Risk Badge */
+  .risk-badge {
+    @apply inline-flex px-8 py-3 rounded-full font-black text-sm backdrop-blur-2xl border transition-all duration-500 hover:scale-110 hover:shadow-glow relative overflow-hidden uppercase tracking-widest;
+  }
+
+  .risk-low {
+    @apply bg-gradient-to-r from-emerald-400/40 to-green-500/40 text-emerald-900 border-emerald-300;
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+  }
+
+  .risk-moderate {
+    @apply bg-gradient-to-r from-amber-300/40 to-orange-400/40 text-amber-900 border-amber-200;
+    box-shadow: 0 10px 30px rgba(245, 158, 11, 0.2);
+  }
+
+  .risk-high {
+    @apply bg-gradient-to-r from-rose-400/40 to-red-500/40 text-rose-900 border-rose-300;
+    box-shadow: 0 10px 30px rgba(244, 63, 94, 0.2);
+  }
+
+  /* Premium 'Happy' Progress Bar */
+  .progress-bar {
+    @apply h-6 bg-slate-100 rounded-full overflow-hidden relative;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .progress-fill {
+    @apply h-full transition-all duration-1000 ease-out relative overflow-hidden rounded-full;
+  }
+
+  .progress-fill::after {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse;
+  }
+
+  /* Premium Recommendation Cards */
+  .recommendation-card {
+    @apply p-8 bg-white/60 rounded-3xl border border-white/80 hover:bg-white/90 transition-all duration-700 hover:shadow-3xl hover:scale-[1.03] hover:border-white relative overflow-hidden;
+  }
+
+  /* Premium Table Styles */
+  .table-row-hover {
+    @apply transition-all duration-500 hover:bg-white/60 hover:scale-[1.02] hover:shadow-3xl cursor-pointer relative rounded-2xl;
+  }
+}
+
+@layer utilities {
+  .text-shadow-happy {
+    text-shadow: 0 2px 10px rgba(68, 172, 255, 0.2);
+  }
+  
+  .glassmorphism-happy {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 15px 45px rgba(68, 172, 255, 0.1);
+  }
+
+  .happy-gradient {
+    background: linear-gradient(135deg, #89D4FF 0%, #F9F6C4 50%, #FE9EC7 100%);
   }
 }

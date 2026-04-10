@@ -98,7 +98,7 @@ export const FutureRegretSimulator = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500"></div>
       </div>
     );
   }
@@ -141,8 +141,8 @@ export const FutureRegretSimulator = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Future Regret Simulator</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
+        <h1 className="text-3xl font-black text-slate-800">Future Regret Simulator</h1>
+        <p className="text-slate-600 font-medium mt-1">
           Reflect on the long-term impact of your current digital habits
         </p>
       </div>
@@ -189,31 +189,31 @@ export const FutureRegretSimulator = () => {
       </div>
 
       {/* Letter from 30-Year-Old Self */}
-      <div className="card bg-gray-50 dark:bg-gray-800/50">
-        <h2 className="text-xl font-semibold mb-4">Letter from Your Future Self</h2>
-        <div className="prose dark:prose-invert max-w-none">
-          <div className="whitespace-pre-line text-gray-700 dark:text-gray-300 leading-relaxed">
+      <div className="card bg-sky-50/50">
+        <h2 className="text-xl font-black text-slate-800 mb-4">Letter from Your Future Self</h2>
+        <div className="prose max-w-none">
+          <div className="whitespace-pre-line text-slate-700 font-medium leading-relaxed">
             {analysis.letter}
           </div>
         </div>
       </div>
 
       {/* Things You Wish You Stopped Earlier */}
-      <div className="card border-l-4 border-orange-500 dark:border-orange-600">
-        <h2 className="text-xl font-semibold mb-4">Things You Wish You Stopped Earlier</h2>
+      <div className="card border-l-8 border-pink-400 shadow-pink-100">
+        <h2 className="text-xl font-black text-slate-800 mb-4">Things You Wish You Stopped Earlier</h2>
         <ul className="space-y-3">
           {analysis.regretList.map((item, index) => (
             <li key={index} className="flex items-start">
-              <span className="text-orange-500 dark:text-orange-400 mr-2">•</span>
-              <span className="text-gray-700 dark:text-gray-300">{item}</span>
+              <span className="text-pink-500 mr-2 font-black">•</span>
+              <span className="text-slate-700 font-medium">{item}</span>
             </li>
           ))}
         </ul>
       </div>
 
       {/* Current Stats Reference */}
-      <div className="card bg-blue-50 dark:bg-blue-900/10">
-        <h3 className="text-lg font-semibold mb-3">Your Current Patterns</h3>
+      <div className="card bg-yellow-50/50 border-sky-100">
+        <h3 className="text-lg font-black text-slate-800 mb-3">Your Current Patterns</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div>
             <p className="text-gray-600 dark:text-gray-400">Daily Average</p>
