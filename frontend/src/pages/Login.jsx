@@ -46,23 +46,29 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="max-w-md w-full">
-        <div className="card">
-          <h1 className="text-3xl font-bold text-center mb-2">Welcome Back</h1>
-          <p className="text-center text-gray-600 dark:text-gray-400 mb-8">
-            Sign in to track your social media usage
+        <div className="clean-card p-8">
+          {/* Logo */}
+          <div className="text-center mb-8">
+            <h1 className="nav-brand text-2xl mb-2">COGNIFY</h1>
+            <p className="text-gray-500 text-sm">Focus on the craft of learning</p>
+          </div>
+
+          <h2 className="text-xl font-semibold text-gray-900 text-center mb-2">Welcome back</h2>
+          <p className="text-center text-gray-500 text-sm mb-8">
+            Sign in to continue your journey
           </p>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-400 rounded-lg">
+            <div className="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-600 rounded-lg text-sm">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 Email
               </label>
               <input
@@ -71,14 +77,15 @@ export const Login = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="input-field"
+                className="clean-input"
+                placeholder="you@example.com"
                 required
                 autoComplete="email"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 Password
               </label>
               <input
@@ -87,26 +94,54 @@ export const Login = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="input-field"
+                className="clean-input"
+                placeholder="••••••••"
                 required
                 autoComplete="current-password"
               />
             </div>
 
+            <div className="flex items-center justify-between text-sm">
+              <label className="flex items-center gap-2 text-gray-600">
+                <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                Remember me
+              </label>
+              <Link to="/forgot-password" className="text-blue-600 hover:text-blue-700">
+                Forgot password?
+              </Link>
+            </div>
+
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full"
+              className="btn-primary w-full justify-center"
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Signing in...
+                </span>
+              ) : (
+                'Sign In'
+              )}
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-8 text-center text-sm text-gray-500">
             Don't have an account?{' '}
-            <Link to="/register" className="text-primary-600 dark:text-primary-400 hover:underline">
+            <Link to="/register" className="text-blue-600 hover:text-blue-700 font-medium">
               Sign up
             </Link>
+          </p>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-8 text-center">
+          <p className="text-xs text-gray-400">
+            © 2026 COGNIFY. All rights reserved.
           </p>
         </div>
       </div>

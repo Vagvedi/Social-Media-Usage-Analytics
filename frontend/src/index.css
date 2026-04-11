@@ -1,189 +1,585 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+/* ============================================
+   ALEXANDRIA-STYLE CLEAN DASHBOARD - DESIGN SYSTEM
+   Editorial Typography, Soft Shadows, Minimal UI
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   CSS VARIABLES - Alexandria Style
+   ============================================ */
+:root {
+  /* Primary - Soft Blue */
+  --primary-50: #f0f5ff;
+  --primary-100: #e0ebff;
+  --primary-200: #c7d8ff;
+  --primary-300: #a5beff;
+  --primary-400: #7a9fff;
+  --primary-500: #5a7fff;
+  --primary-600: #4a6de5;
+  --primary-700: #3d5bc7;
+  
+  /* Neutral - Warm Grays */
+  --gray-50: #fafaf9;
+  --gray-100: #f5f5f4;
+  --gray-200: #e7e5e4;
+  --gray-300: #d6d3d1;
+  --gray-400: #a8a29e;
+  --gray-500: #78716c;
+  --gray-600: #57534e;
+  --gray-700: #44403c;
+  --gray-800: #292524;
+  --gray-900: #1c1917;
+  
+  /* Accent - Soft Gold */
+  --gold-100: #fef3c7;
+  --gold-200: #fde68a;
+  --gold-500: #d97706;
+  --gold-600: #b45309;
+  
+  /* Semantic */
+  --success: #059669;
+  --success-light: #d1fae5;
+  --warning: #d97706;
+  --warning-light: #fef3c7;
+  --error: #dc2626;
+  --error-light: #fee2e2;
+  
+  /* Shadows - Soft and subtle */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+  
+  /* Transitions */
+  --transition-fast: 150ms ease-out;
+  --transition-base: 250ms ease-out;
+  --transition-slow: 350ms ease-out;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
 @layer base {
+  * {
+    @apply border-gray-200;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
   body {
-    @apply bg-gradient-to-br from-sky-100 via-yellow-100 to-pink-100 text-slate-900 transition-all duration-300 min-h-screen;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    @apply bg-gray-50 text-gray-900 antialiased;
     font-feature-settings: 'rlig' 1, 'calt' 1;
   }
   
-  * {
-    @apply transition-colors duration-300;
+  /* Editorial Headings */
+  h1, h2, h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    @apply font-semibold tracking-tight;
   }
-
-  /* Custom scrollbar */
+  
+  /* Scrollbar */
   ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
+    height: 6px;
   }
   
   ::-webkit-scrollbar-track {
-    @apply bg-sky-200/20;
+    @apply bg-gray-100 rounded-full;
   }
   
   ::-webkit-scrollbar-thumb {
-    @apply bg-sky-400 rounded-full;
+    @apply bg-gray-300 rounded-full;
+    transition: background-color var(--transition-fast);
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-pink-400;
-  }
-}
-
-@layer components {
-  /* Premium 'Happy' Button Styles */
-  .btn-primary {
-    @apply px-8 py-4 bg-gradient-to-r from-pink-500 via-pink-400 to-ocean-400 text-white font-bold rounded-2xl transition-all duration-500 transform hover:scale-105 hover:shadow-glow hover:from-pink-600 hover:via-pink-500 hover:to-ocean-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden;
-    letter-spacing: 0.05em;
-    box-shadow: 0 10px 25px rgba(254, 158, 199, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.4);
-  }
-
-  .btn-primary::before {
-    content: '';
-    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent transform -translate-x-full transition-transform duration-1000 ease-in-out;
-  }
-
-  .btn-primary:hover::before {
-    @apply translate-x-full;
-  }
-
-  .btn-primary:hover {
-    box-shadow: 0 20px 40px rgba(254, 158, 199, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.5), 0 0 20px rgba(68, 172, 255, 0.3);
-  }
-
-  .btn-secondary {
-    @apply px-8 py-4 bg-gradient-to-r from-sky-100 via-white to-sky-50 text-ocean-600 font-bold rounded-2xl transition-all duration-500 transform hover:scale-105 hover:shadow-2xl border border-sky-300/50 relative overflow-hidden;
-    letter-spacing: 0.025em;
-    box-shadow: 0 8px 20px rgba(68, 172, 255, 0.15);
-  }
-
-  .btn-secondary:hover {
-    @apply from-sky-200 via-white to-sky-100 border-sky-400/60;
-    box-shadow: 0 15px 35px rgba(68, 172, 255, 0.25), 0 0 15px rgba(254, 158, 199, 0.1);
-  }
-
-  /* Premium 'Happy' Input Styles */
-  .input-field {
-    @apply w-full px-5 py-4 bg-white/40 backdrop-blur-xl border border-sky-200 rounded-2xl text-slate-800 placeholder-sky-400 focus:ring-4 focus:ring-pink-400/30 focus:border-pink-400 outline-none transition-all duration-500 hover:bg-white/60 hover:border-sky-300 hover:shadow-3xl;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
-  }
-
-  .input-field:focus {
-    @apply bg-white/80 border-pink-400 shadow-4xl ring-4 ring-pink-400/20;
-    box-shadow: 0 0 0 4px rgba(254, 158, 199, 0.1), 0 25px 50px rgba(68, 172, 255, 0.15);
-  }
-
-  /* Premium 'Happy' Card Styles */
-  .card {
-    @apply bg-white/60 backdrop-blur-3xl rounded-3xl shadow-3xl p-8 border border-white/80 transition-all duration-700 hover:shadow-4xl hover:bg-white/80 hover:border-white hover:scale-[1.03] animate-fade-in;
-    box-shadow: 0 20px 40px rgba(68, 172, 255, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.8);
-  }
-
-  .card:hover {
-    box-shadow: 0 40px 80px rgba(254, 158, 199, 0.15), 0 0 0 2px rgba(255, 255, 255, 1);
-  }
-
-  .glass-card {
-    @apply bg-white/40 backdrop-blur-3xl rounded-3xl shadow-4xl border border-white/60 transition-all duration-700 hover:shadow-glow hover:bg-white/60 hover:scale-[1.04] hover:border-white/80;
-    box-shadow: 0 30px 60px rgba(68, 172, 255, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.5);
-  }
-
-  .glass-card:hover {
-    box-shadow: 0 40px 80px rgba(254, 158, 199, 0.1), 0 0 30px rgba(68, 172, 255, 0.15), 0 0 0 3px rgba(255, 255, 255, 0.8);
-  }
-
-  /* Premium 'Happy' Navbar */
-  .navbar-blur {
-    @apply bg-white/40 backdrop-blur-3xl border-b border-white/60 shadow-xl transition-all duration-500 hover:bg-white/60;
-  }
-
-  .nav-link {
-    @apply relative text-ocean-600 hover:text-pink-500 font-bold transition-all duration-500 px-6 py-3 rounded-2xl hover:bg-white/40 hover:scale-110 hover:shadow-lg relative overflow-hidden;
-    letter-spacing: 0.05em;
-  }
-
-  .nav-link::after {
-    content: '';
-    @apply absolute bottom-2 left-4 right-4 h-1 bg-gradient-to-r from-pink-400 to-ocean-400 transform scale-x-0 transition-transform duration-700 rounded-full;
-  }
-
-  .nav-link:hover::after {
-    @apply scale-x-100;
-    box-shadow: 0 0 20px rgba(254, 158, 199, 0.6);
-  }
-
-  /* Premium Stat Cards */
-  .stat-card {
-    @apply glass-card p-8 text-center hover:scale-110 transform transition-all duration-700 hover:shadow-glow relative overflow-hidden;
-  }
-
-  /* Premium Chart Container */
-  .chart-container {
-    @apply bg-white/50 backdrop-blur-3xl rounded-3xl p-8 border border-white/80 hover:bg-white/70 hover:shadow-4xl transition-all duration-700 hover:scale-[1.02] relative overflow-hidden;
-    box-shadow: 0 25px 60px rgba(68, 172, 255, 0.05), 0 0 0 1px rgba(255, 255, 255, 0.8);
-  }
-
-  /* Premium Risk Badge */
-  .risk-badge {
-    @apply inline-flex px-8 py-3 rounded-full font-black text-sm backdrop-blur-2xl border transition-all duration-500 hover:scale-110 hover:shadow-glow relative overflow-hidden uppercase tracking-widest;
-  }
-
-  .risk-low {
-    @apply bg-gradient-to-r from-emerald-400/40 to-green-500/40 text-emerald-900 border-emerald-300;
-    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
-  }
-
-  .risk-moderate {
-    @apply bg-gradient-to-r from-amber-300/40 to-orange-400/40 text-amber-900 border-amber-200;
-    box-shadow: 0 10px 30px rgba(245, 158, 11, 0.2);
-  }
-
-  .risk-high {
-    @apply bg-gradient-to-r from-rose-400/40 to-red-500/40 text-rose-900 border-rose-300;
-    box-shadow: 0 10px 30px rgba(244, 63, 94, 0.2);
-  }
-
-  /* Premium 'Happy' Progress Bar */
-  .progress-bar {
-    @apply h-6 bg-slate-100 rounded-full overflow-hidden relative;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-
-  .progress-fill {
-    @apply h-full transition-all duration-1000 ease-out relative overflow-hidden rounded-full;
-  }
-
-  .progress-fill::after {
-    content: '';
-    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse;
-  }
-
-  /* Premium Recommendation Cards */
-  .recommendation-card {
-    @apply p-8 bg-white/60 rounded-3xl border border-white/80 hover:bg-white/90 transition-all duration-700 hover:shadow-3xl hover:scale-[1.03] hover:border-white relative overflow-hidden;
-  }
-
-  /* Premium Table Styles */
-  .table-row-hover {
-    @apply transition-all duration-500 hover:bg-white/60 hover:scale-[1.02] hover:shadow-3xl cursor-pointer relative rounded-2xl;
-  }
-}
-
-@layer utilities {
-  .text-shadow-happy {
-    text-shadow: 0 2px 10px rgba(68, 172, 255, 0.2);
+    @apply bg-gray-400;
   }
   
-  .glassmorphism-happy {
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(40px) saturate(150%);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    box-shadow: 0 15px 45px rgba(68, 172, 255, 0.1);
-  }
-
-  .happy-gradient {
-    background: linear-gradient(135deg, #89D4FF 0%, #F9F6C4 50%, #FE9EC7 100%);
+  /* Selection */
+  ::selection {
+    @apply bg-primary-100 text-primary-900;
   }
 }
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@layer utilities {
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fade-in-up {
+    animation: fade-in-up 0.4s ease-out forwards;
+  }
+  
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out forwards;
+  }
+}
+
+/* ============================================
+   COMPONENTS - Alexandria Style
+   ============================================ */
+@layer components {
+  
+  /* ----------------------------------------
+     CLEAN CARDS - Soft and minimal
+     ---------------------------------------- */
+  .clean-card {
+    @apply relative bg-white rounded-2xl;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    transition: all var(--transition-base);
+  }
+  
+  .clean-card:hover {
+    box-shadow: 0 20px 30px -5px rgba(0, 0, 0, 0.08), 0 10px 15px -5px rgba(0, 0, 0, 0.03);
+    transform: translateY(-2px);
+  }
+  
+  /* ----------------------------------------
+     EDITORIAL BUTTONS
+     ---------------------------------------- */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2;
+    @apply px-5 py-2.5 text-sm font-medium text-white;
+    @apply rounded-lg;
+    @apply transition-all duration-200;
+    background: var(--primary-600);
+    box-shadow: 0 1px 3px rgba(74, 109, 229, 0.3);
+  }
+  
+  .btn-primary:hover {
+    background: var(--primary-700);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(74, 109, 229, 0.4);
+  }
+  
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2;
+    @apply px-5 py-2.5 text-sm font-medium text-gray-700;
+    @apply bg-white rounded-lg;
+    @apply transition-all duration-200;
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .btn-secondary:hover {
+    @apply bg-gray-50 text-gray-900;
+    border-color: var(--gray-300);
+  }
+  
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2;
+    @apply px-4 py-2 text-sm font-medium text-gray-500;
+    @apply rounded-lg;
+    @apply transition-all duration-200;
+  }
+  
+  .btn-ghost:hover {
+    @apply text-gray-700 bg-gray-100;
+  }
+  
+  /* ----------------------------------------
+     NAVIGATION - Clean minimal navbar
+     ---------------------------------------- */
+  .main-navbar {
+    @apply fixed top-0 left-0 right-0 z-50;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--gray-200);
+  }
+  
+  .nav-brand {
+    font-family: 'Playfair Display', serif;
+    @apply text-xl font-semibold text-gray-900 tracking-tight;
+  }
+  
+  .nav-link {
+    @apply px-4 py-2 text-sm font-medium text-gray-500;
+    @apply transition-colors duration-200;
+    position: relative;
+  }
+  
+  .nav-link:hover {
+    @apply text-gray-900;
+  }
+  
+  .nav-link.active {
+    @apply text-primary-600;
+  }
+  
+  .nav-link.active::after {
+    content: '';
+    @apply absolute bottom-0 left-4 right-4;
+    height: 2px;
+    background: var(--primary-600);
+    border-radius: 1px;
+  }
+  
+  /* ----------------------------------------
+     HERO SECTION
+     ---------------------------------------- */
+  .hero-section {
+    @apply py-12 px-8;
+    background: linear-gradient(180deg, #ffffff 0%, var(--gray-50) 100%);
+  }
+  
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    @apply text-4xl md:text-5xl font-semibold text-gray-900 leading-tight;
+    letter-spacing: -0.02em;
+  }
+  
+  .hero-subtitle {
+    @apply text-base text-gray-500 mt-4 max-w-md leading-relaxed;
+  }
+  
+  /* ----------------------------------------
+     PILL TABS
+     ---------------------------------------- */
+  .pill-tabs {
+    @apply inline-flex p-1 bg-gray-100 rounded-xl;
+  }
+  
+  .pill-tab {
+    @apply px-4 py-2 text-sm font-medium text-gray-500 rounded-lg;
+    @apply transition-all duration-200;
+  }
+  
+  .pill-tab:hover {
+    @apply text-gray-700;
+  }
+  
+  .pill-tab.active {
+    @apply text-gray-900 bg-white;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  /* ----------------------------------------
+     METRIC CARDS - Clean stats
+     ---------------------------------------- */
+  .metric-card {
+    @apply clean-card p-6;
+    @apply flex flex-col justify-between;
+  }
+  
+  .metric-card .metric-label {
+    @apply text-xs font-semibold text-gray-400 uppercase tracking-wider;
+  }
+  
+  .metric-card .metric-value {
+    font-family: 'Inter', sans-serif;
+    @apply text-3xl font-semibold text-gray-900 mt-2;
+  }
+  
+  .metric-card .metric-trend {
+    @apply inline-flex items-center gap-1 mt-3 text-xs font-medium;
+  }
+  
+  .metric-card .metric-trend.up {
+    @apply text-emerald-600;
+  }
+  
+  .metric-card .metric-trend.down {
+    @apply text-red-500;
+  }
+  
+  /* ----------------------------------------
+     MINI CHART
+     ---------------------------------------- */
+  .mini-chart {
+    @apply mt-4;
+  }
+  
+  .mini-bar {
+    @apply rounded-sm;
+    transition: all var(--transition-fast);
+  }
+  
+  /* ----------------------------------------
+     INSIGHTS PANEL
+     ---------------------------------------- */
+  .insights-card {
+    @apply clean-card p-6;
+    border-left: 3px solid var(--gold-500);
+  }
+  
+  .insights-card .insights-title {
+    @apply text-sm font-semibold text-gray-900 flex items-center gap-2;
+  }
+  
+  .insights-card .insights-quote {
+    @apply text-sm text-gray-600 mt-3 leading-relaxed;
+    font-style: italic;
+  }
+  
+  .insights-card .insights-meta {
+    @apply text-xs text-gray-400 mt-3 uppercase tracking-wider;
+  }
+  
+  /* ----------------------------------------
+     CALENDAR - Clean minimal
+     ---------------------------------------- */
+  .calendar-clean {
+    @apply clean-card p-6;
+  }
+  
+  .calendar-header {
+    @apply flex items-center justify-between mb-4;
+  }
+  
+  .calendar-title {
+    @apply text-sm font-semibold text-gray-900;
+  }
+  
+  .calendar-grid {
+    @apply grid grid-cols-7 gap-1;
+  }
+  
+  .calendar-day-header {
+    @apply text-center py-2 text-xs font-medium text-gray-400;
+  }
+  
+  .calendar-day {
+    @apply aspect-square rounded-lg p-1;
+    @apply flex items-center justify-center;
+    @apply text-sm text-gray-600;
+    @apply transition-all duration-200 cursor-pointer;
+  }
+  
+  .calendar-day:hover {
+    @apply bg-gray-100;
+  }
+  
+  .calendar-day.today {
+    @apply bg-primary-100 text-primary-700 font-medium;
+  }
+  
+  .calendar-day.has-event::after {
+    content: '';
+    @apply absolute bottom-1;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--primary-500);
+  }
+  
+  /* ----------------------------------------
+     FOOTER
+     ---------------------------------------- */
+  .minimal-footer {
+    @apply py-8 px-8 border-t border-gray-200;
+    @apply flex items-center justify-between;
+  }
+  
+  .footer-brand {
+    font-family: 'Playfair Display', serif;
+    @apply text-sm font-semibold text-gray-900;
+  }
+  
+  .footer-links {
+    @apply flex items-center gap-6;
+  }
+  
+  .footer-link {
+    @apply text-xs font-medium text-gray-400;
+    @apply transition-colors duration-200;
+  }
+  
+  .footer-link:hover {
+    @apply text-gray-600;
+  }
+  
+  /* ----------------------------------------
+     FORM ELEMENTS
+     ---------------------------------------- */
+  .clean-input {
+    @apply w-full px-4 py-3 rounded-xl text-sm;
+    @apply bg-white border border-gray-200;
+    @apply text-gray-900 placeholder-gray-400;
+    @apply transition-all duration-200;
+    @apply focus:outline-none focus:border-primary-400;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .clean-input:hover {
+    border-color: var(--gray-300);
+  }
+  
+  /* ----------------------------------------
+     BADGES
+     ---------------------------------------- */
+  .clean-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .clean-badge.blue {
+    @apply bg-primary-100 text-primary-700;
+  }
+  
+  .clean-badge.green {
+    @apply bg-emerald-100 text-emerald-700;
+  }
+  
+  .clean-badge.amber {
+    @apply bg-amber-100 text-amber-700;
+  }
+  
+  .clean-badge.red {
+    @apply bg-rose-100 text-rose-700;
+  }
+  
+  /* ----------------------------------------
+     PROGRESS BAR
+     ---------------------------------------- */
+  .clean-progress {
+    @apply h-1.5 bg-gray-100 rounded-full overflow-hidden;
+  }
+  
+  .clean-progress-bar {
+    @apply h-full rounded-full;
+    background: var(--primary-600);
+    transition: width var(--transition-slow);
+  }
+  
+  /* ----------------------------------------
+     LEGACY COMPATIBILITY
+     ---------------------------------------- */
+  .saas-card {
+    @apply clean-card;
+  }
+  
+  .card {
+    @apply clean-card p-6;
+  }
+  
+  .glass-card {
+    @apply clean-card;
+  }
+  
+  .stat-card {
+    @apply metric-card;
+  }
+  
+  .saas-tabs {
+    @apply pill-tabs;
+  }
+  
+  .saas-tab {
+    @apply pill-tab;
+  }
+  
+  .saas-input {
+    @apply clean-input;
+  }
+  
+  .saas-badge {
+    @apply clean-badge;
+  }
+  
+  .saas-badge.success {
+    @apply green;
+  }
+  
+  .saas-badge.warning {
+    @apply amber;
+  }
+  
+  .saas-badge.error {
+    @apply red;
+  }
+  
+  .saas-badge.info {
+    @apply blue;
+  }
+  
+  .saas-progress {
+    @apply clean-progress;
+  }
+  
+  .saas-progress-bar {
+    @apply clean-progress-bar;
+  }
+  
+  .risk-badge {
+    @apply clean-badge;
+  }
+  
+  .risk-low {
+    @apply green;
+  }
+  
+  .risk-moderate {
+    @apply amber;
+  }
+  
+  .risk-high {
+    @apply red;
+  }
+  
+  .progress-bar {
+    @apply clean-progress;
+  }
+  
+  .progress-fill {
+    @apply clean-progress-bar;
+  }
+  
+  .loading-spinner {
+    @apply w-6 h-6 border-2 border-gray-200 border-t-primary-500 rounded-full;
+    animation: spin 0.8s linear infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+@layer utilities {
+  .text-editorial {
+    font-family: 'Playfair Display', serif;
+  }
+  
+  .text-body {
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .shadow-soft {
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .border-soft {
+    border-color: rgba(0, 0, 0, 0.04);
+  }
+}
+

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { studyAPI } from '../services/api';
 import { EditModal } from './EditModal';
 
-export const StudyCalendar = () => {
+export const StudyCalendar = ({ compact = false }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [sessions, setSessions] = useState([]);
@@ -171,7 +171,15 @@ export const StudyCalendar = () => {
 
     // Add empty cells for days before month starts
     for (let i = 0; i < firstDay; i++) {
-      days.push(<div key={`empty-${i}`} className="h-28 rounded-2xl bg-white/5 border border-white/5"></div>);
+      days.push(
+        <div 
+          key={`empty-${i}`} 
+          className={compact 
+            ? "aspect-square rounded-lg bg-gray-50/50" 
+            : "h-24 rounded-xl bg-slate-50/50"
+          }
+        ></div>
+      );
     }
 
     // Add days of the month
@@ -183,49 +191,76 @@ export const StudyCalendar = () => {
       const isSelected = selectedDate?.toDateString() === date.toDateString();
       const studyHours = calculateStudyHours(date);
 
-      days.push(
-        <div
-          key={day}
-          onClick={() => handleDateClick(date)}
-          className={`h-28 rounded-2xl p-3 cursor-pointer transition-all duration-300 border ${
-            isToday 
-              ? 'bg-gradient-to-br from-caramel-500/30 via-coffee-600/20 to-coffee-700/30 border-caramel-400/50 shadow-lg shadow-caramel-500/20' 
-              : isSelected
-                ? 'bg-gradient-to-br from-coffee-600/40 via-coffee-700/30 to-coffee-800/40 border-caramel-400/60 shadow-xl'
+      if (compact) {
+        // Compact mode for Dashboard
+        days.push(
+          <div
+            key={day}
+            onClick={() => handleDateClick(date)}
+            className={`calendar-day text-xs ${
+              isToday 
+                ? 'bg-blue-100 text-blue-700 font-medium' 
                 : hasEvents
-                  ? 'bg-white/10 border-white/20 hover:bg-white/20 hover:border-caramel-400/30 hover:shadow-lg hover:scale-105'
-                  : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 hover:scale-105'
-          }`}
-        >
-          <div className="flex justify-between items-start mb-2">
-            <span className={`text-lg font-bold ${
-              isToday ? 'text-caramel-300' : 'text-coffee-200'
-            }`}>
-              {day}
-            </span>
+                  ? 'bg-gray-50 hover:bg-gray-100'
+                  : 'hover:bg-gray-50'
+            }`}
+          >
+            {day}
             {hasEvents && (
-              <div className="flex space-x-1.5">
+              <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 flex gap-0.5">
                 {events.sessions.length > 0 && (
-                  <span className="w-3 h-3 bg-gradient-to-br from-green-400 to-green-600 rounded-full shadow-lg shadow-green-500/50" title="Study sessions"></span>
-                )}
-                {events.goals.length > 0 && (
-                  <span className="w-3 h-3 bg-gradient-to-br from-caramel-400 to-coffee-500 rounded-full shadow-lg shadow-caramel-500/50" title="Goals"></span>
+                  <span className="w-1 h-1 bg-blue-500 rounded-full"></span>
                 )}
               </div>
             )}
           </div>
-          {studyHours > 0 && (
-            <div className="text-sm font-bold text-green-400 mb-1">
-              {studyHours.toFixed(1)}h
+        );
+      } else {
+        // Full mode for Study Hub
+        days.push(
+          <div
+            key={day}
+            onClick={() => handleDateClick(date)}
+            className={`h-24 rounded-xl p-3 cursor-pointer transition-all duration-200 border ${
+              isToday 
+                ? 'bg-blue-50 border-blue-200 shadow-md' 
+                : isSelected
+                  ? 'bg-blue-100 border-blue-300 shadow-md'
+                  : hasEvents
+                    ? 'bg-white border-slate-200 hover:border-blue-300 hover:shadow-md hover:-translate-y-1'
+                    : 'bg-white border-slate-100 hover:border-slate-300 hover:shadow-sm'
+            }`}
+          >
+            <div className="flex justify-between items-start mb-1">
+              <span className={`text-sm font-semibold ${
+                isToday ? 'text-blue-600' : 'text-slate-700'
+              }`}>
+                {day}
+              </span>
+              {hasEvents && (
+                <div className="flex gap-1">
+                  {events.sessions.length > 0 && (
+                    <span className="w-2 h-2 bg-emerald-400 rounded-full" title="Study sessions"></span>
+                  )}
+                  {events.goals.length > 0 && (
+                    <span className="w-2 h-2 bg-amber-400 rounded-full" title="Goals"></span>
+                  )}
+                </div>
+              )}
             </div>
-          )}
-          {events.sessions.length > 0 && (
-            <div className="text-xs text-coffee-300 font-medium truncate">
-              {events.sessions.length} session{events.sessions.length > 1 ? 's' : ''}
-            </div>
-          )}
-        </div>
-      );
+            {studyHours > 0 && (
+              <div className="text-xs font-medium text-emerald-600">
+                {studyHours.toFixed(1)}h
+              </div>
+            )}
+            {events.sessions.length > 0 && (
+              <div className="text-xs text-slate-500 truncate">
+                {events.sessions.length} session{events.sessions.length > 1 ? 's' : ''}
+              </div>
+            )}
+          </div>
+        );
+      }
     }
 
     return days;
@@ -240,48 +275,101 @@ export const StudyCalendar = () => {
 
   if (loading) {
     return (
-      <div className="glass-card p-8">
-        <div className="flex items-center justify-center h-64">
+      <div className={`${compact ? '' : 'saas-card p-8'}`}>
+        <div className="flex items-center justify-center h-32">
           <div className="loading-spinner"></div>
         </div>
       </div>
     );
   }
 
+  // Compact version for Dashboard
+  if (compact) {
+    return (
+      <div>
+        {/* Compact Calendar Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigateMonth('prev')}
+              className="p-1.5 rounded hover:bg-gray-100 transition-colors"
+            >
+              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <h3 className="text-xs font-semibold text-gray-900">
+              {monthYear}
+            </h3>
+            <button
+              onClick={() => navigateMonth('next')}
+              className="p-1.5 rounded hover:bg-gray-100 transition-colors"
+            >
+              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Compact Calendar Grid */}
+        <div className="calendar-grid gap-1">
+          {weekDays.map(day => (
+            <div key={day} className="calendar-day-header">
+              {day.charAt(0)}
+            </div>
+          ))}
+          {renderCalendar()}
+        </div>
+
+        {/* Legend */}
+        <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+            <span className="text-xs text-gray-500">Next Exam: Data Structures</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Full version for Study Hub
   return (
     <>
-      <div className="glass-card overflow-hidden">
-        {/* Premium Header */}
-        <div className="p-8 border-b border-white/10">
+      <div className="saas-card overflow-hidden">
+        {/* Calendar Header */}
+        <div className="p-6 border-b border-slate-100">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-caramel-400 to-coffee-600 rounded-2xl flex items-center justify-center shadow-lg shadow-caramel-500/30">
-                <span className="text-2xl">📅</span>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-coffee-100">Study Calendar</h2>
-                <p className="text-coffee-400 text-sm">Track your learning journey</p>
+                <h2 className="text-lg font-semibold text-slate-900">Study Calendar</h2>
+                <p className="text-slate-500 text-sm">Track your learning journey</p>
               </div>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => navigateMonth('prev')}
-                className="p-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl transition-all duration-300 hover:scale-110 group"
+                className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
               >
-                <svg className="w-6 h-6 text-coffee-200 group-hover:text-caramel-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              <div className="glass-card px-8 py-4 rounded-2xl min-w-[200px] text-center">
-                <h3 className="text-xl font-bold text-coffee-100">
+              <div className="px-4 py-2 bg-slate-100 rounded-lg min-w-[140px] text-center">
+                <h3 className="text-sm font-semibold text-slate-900">
                   {monthYear}
                 </h3>
               </div>
               <button
                 onClick={() => navigateMonth('next')}
-                className="p-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl transition-all duration-300 hover:scale-110 group"
+                className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
               >
-                <svg className="w-6 h-6 text-coffee-200 group-hover:text-caramel-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
@@ -289,13 +377,13 @@ export const StudyCalendar = () => {
           </div>
         </div>
 
-        {/* Premium Calendar Grid */}
+        {/* Calendar Grid */}
         <div className="p-6">
           {/* Week day headers */}
-          <div className="grid grid-cols-7 gap-2 mb-4">
+          <div className="grid grid-cols-7 gap-2 mb-2">
             {weekDays.map(day => (
-              <div key={day} className="text-center py-3">
-                <span className="text-sm font-bold text-caramel-300 uppercase tracking-wider">{day}</span>
+              <div key={day} className="text-center py-2">
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{day}</span>
               </div>
             ))}
           </div>
@@ -305,18 +393,21 @@ export const StudyCalendar = () => {
             {renderCalendar()}
           </div>
         </div>
+      </div>
 
-      {/* Premium Event Modal */}
+      {/* Event Modal */}
       {showEventModal && selectedDate && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="glass-card max-w-2xl w-full max-h-[85vh] overflow-y-auto border border-white/30 shadow-2xl">
-            <div className="flex items-center justify-between mb-6 p-6 border-b border-white/10">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-caramel-400 to-coffee-600 rounded-2xl flex items-center justify-center shadow-lg">
-                  <span className="text-2xl">📅</span>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="saas-card max-w-2xl w-full max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-coffee-100">
+                  <h3 className="text-base font-semibold text-slate-900">
                     {selectedDate.toLocaleDateString('en-US', { 
                       weekday: 'long', 
                       year: 'numeric', 
@@ -324,85 +415,87 @@ export const StudyCalendar = () => {
                       day: 'numeric' 
                     })}
                   </h3>
-                  <p className="text-coffee-400 text-sm">Study Day Overview</p>
+                  <p className="text-slate-500 text-sm">Study Day Overview</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowEventModal(false)}
-                className="p-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all duration-300 hover:scale-110 group border border-white/20"
+                className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
               >
-                <svg className="w-6 h-6 text-coffee-300 group-hover:text-caramel-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
-            <div className="space-y-6 p-6 pt-0">
-              {/* Premium Study Sessions */}
+            <div className="p-6 space-y-6">
+              {/* Study Sessions */}
               {selectedEvents.sessions.length > 0 && (
                 <div>
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                      <span className="text-xl">📚</span>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253z" />
+                      </svg>
                     </div>
-                    <h4 className="text-lg font-bold text-coffee-100">Study Sessions ({selectedEvents.sessions.length})</h4>
+                    <h4 className="text-sm font-semibold text-slate-900">Study Sessions ({selectedEvents.sessions.length})</h4>
                   </div>
                   <div className="space-y-3">
                     {selectedEvents.sessions.map(session => (
-                      <div key={session.id} className="recommendation-card border-green-500/20">
-                        <div className="flex items-center justify-between">
+                      <div key={session.id} className="p-4 rounded-xl bg-slate-50">
+                        <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="font-bold text-lg text-coffee-100 mb-2">
+                            <div className="font-medium text-slate-900 mb-1">
                               {session.subject}
                             </div>
-                            <div className="flex items-center space-x-4 text-sm text-coffee-300">
-                              <span className="flex items-center space-x-2">
-                                <svg className="w-4 h-4 text-caramel-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="flex items-center gap-4 text-xs text-slate-500">
+                              <span className="flex items-center gap-1">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 <span>{formatTime(session.startTime)} - {formatTime(session.endTime)}</span>
                               </span>
                             </div>
-                            <div className="text-sm text-coffee-400 mt-2">
-                              Duration: <span className="text-green-400 font-semibold">{((new Date(session.endTime) - new Date(session.startTime)) / (1000 * 60 * 60)).toFixed(1)} hours</span>
+                            <div className="text-xs text-slate-500 mt-1">
+                              Duration: <span className="text-emerald-600 font-medium">{((new Date(session.endTime) - new Date(session.startTime)) / (1000 * 60 * 60)).toFixed(1)} hours</span>
                             </div>
                             {session.productivity && (
-                              <div className="mt-3">
-                                <span className={`risk-badge ${
-                                  session.productivity === 'high' ? 'risk-low' :
-                                  session.productivity === 'medium' ? 'risk-moderate' :
-                                  'risk-high'
+                              <div className="mt-2">
+                                <span className={`saas-badge ${
+                                  session.productivity === 'high' ? 'success' :
+                                  session.productivity === 'medium' ? 'warning' :
+                                  'error'
                                 }`}>
                                   {session.productivity} productivity
                                 </span>
                               </div>
                             )}
                           </div>
-                          <div className="flex space-x-2">
+                          <div className="flex gap-1">
                             <button
                               onClick={() => editSession(session)}
-                              className="p-3 bg-coffee-600/30 hover:bg-coffee-600/50 rounded-xl transition-all duration-300 hover:scale-110 group border border-coffee-500/30"
+                              className="p-2 rounded-lg hover:bg-slate-200 transition-colors"
                               title="Edit session"
                             >
-                              <svg className="w-5 h-5 text-coffee-200 group-hover:text-caramel-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                               </svg>
                             </button>
                             <button
                               onClick={() => deleteSession(session.id)}
-                              className="p-3 bg-red-500/20 hover:bg-red-500/40 rounded-xl transition-all duration-300 hover:scale-110 group border border-red-500/30"
+                              className="p-2 rounded-lg hover:bg-rose-100 transition-colors"
                               title="Delete session"
                             >
-                              <svg className="w-5 h-5 text-red-300 group-hover:text-red-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                               </svg>
                             </button>
                           </div>
                         </div>
                         {session.notes && (
-                          <div className="mt-4 pt-4 border-t border-white/10">
-                            <p className="text-sm text-coffee-300">
-                              <span className="text-caramel-300 font-semibold">Notes:</span> {session.notes}
+                          <div className="mt-3 pt-3 border-t border-slate-200">
+                            <p className="text-xs text-slate-500">
+                              <span className="font-medium">Notes:</span> {session.notes}
                             </p>
                           </div>
                         )}
@@ -412,64 +505,66 @@ export const StudyCalendar = () => {
                 </div>
               )}
 
-              {/* Premium Goals */}
+              {/* Goals */}
               {selectedEvents.goals.length > 0 && (
                 <div>
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="w-10 h-10 bg-gradient-to-br from-caramel-400 to-coffee-600 rounded-xl flex items-center justify-center shadow-lg">
-                      <span className="text-xl">🎯</span>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                      </svg>
                     </div>
-                    <h4 className="text-lg font-bold text-coffee-100">Goals ({selectedEvents.goals.length})</h4>
+                    <h4 className="text-sm font-semibold text-slate-900">Goals ({selectedEvents.goals.length})</h4>
                   </div>
                   <div className="space-y-3">
                     {selectedEvents.goals.map(goal => (
-                      <div key={goal.id} className="recommendation-card border-caramel-500/20">
-                        <div className="flex items-center justify-between">
+                      <div key={goal.id} className="p-4 rounded-xl bg-slate-50">
+                        <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="font-bold text-lg text-coffee-100 flex items-center mb-3">
+                            <div className="font-medium text-slate-900 flex items-center gap-2 mb-2">
                               <div 
-                                className="w-4 h-4 rounded-full mr-3 shadow-lg" 
+                                className="w-3 h-3 rounded-full" 
                                 style={{ backgroundColor: goal.color }}
                               ></div>
                               {goal.subject}
                             </div>
-                            <div className="flex items-center justify-between text-sm mb-3">
-                              <span className="text-coffee-300">
-                                Target: <span className="text-caramel-300 font-semibold">{goal.targetHours}h</span>
+                            <div className="flex items-center justify-between text-xs mb-2">
+                              <span className="text-slate-500">
+                                Target: <span className="font-medium">{goal.targetHours}h</span>
                               </span>
-                              <span className="text-coffee-300">
-                                Current: <span className="text-green-400 font-semibold">{goal.currentHours}h</span>
+                              <span className="text-slate-500">
+                                Current: <span className="text-emerald-600 font-medium">{goal.currentHours}h</span>
                               </span>
                             </div>
-                            <div className="mt-3">
-                              <div className="flex items-center justify-between text-xs text-coffee-400 mb-2">
+                            <div>
+                              <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
                                 <span>Progress</span>
-                                <span className="text-caramel-300 font-semibold">{Math.round(((parseFloat(goal.currentHours) || 0) / (parseFloat(goal.targetHours) || 1)) * 100)}%</span>
+                                <span className="font-medium">{Math.round(((parseFloat(goal.currentHours) || 0) / (parseFloat(goal.targetHours) || 1)) * 100)}%</span>
                               </div>
-                              <div className="progress-bar">
+                              <div className="saas-progress h-2">
                                 <div 
-                                  className="progress-fill rounded-full"
+                                  className="saas-progress-bar"
                                   style={{ width: `${Math.min(((parseFloat(goal.currentHours) || 0) / (parseFloat(goal.targetHours) || 1)) * 100, 100)}%` }}
                                 ></div>
                               </div>
                             </div>
                           </div>
-                          <div className="flex space-x-2 ml-4">
+                          <div className="flex gap-1 ml-3">
                             <button
                               onClick={() => editGoal(goal)}
-                              className="p-3 bg-coffee-600/30 hover:bg-coffee-600/50 rounded-xl transition-all duration-300 hover:scale-110 group border border-coffee-500/30"
+                              className="p-2 rounded-lg hover:bg-slate-200 transition-colors"
                               title="Edit goal"
                             >
-                              <svg className="w-5 h-5 text-coffee-200 group-hover:text-caramel-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                               </svg>
                             </button>
                             <button
                               onClick={() => deleteGoal(goal.id)}
-                              className="p-3 bg-red-500/20 hover:bg-red-500/40 rounded-xl transition-all duration-300 hover:scale-110 group border border-red-500/30"
+                              className="p-2 rounded-lg hover:bg-rose-100 transition-colors"
                               title="Delete goal"
                             >
-                              <svg className="w-5 h-5 text-red-300 group-hover:text-red-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                               </svg>
                             </button>
@@ -482,14 +577,16 @@ export const StudyCalendar = () => {
               )}
 
               {selectedEvents.sessions.length === 0 && selectedEvents.goals.length === 0 && (
-                <div className="text-center py-12 glass-card">
-                  <div className="w-20 h-20 bg-gradient-to-br from-coffee-700 to-caramel-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
-                    <span className="text-4xl">☕</span>
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253z" />
+                    </svg>
                   </div>
-                  <p className="text-xl text-coffee-200 mb-6 font-medium">No study sessions or goals on this date</p>
+                  <p className="text-slate-600 mb-4">No study sessions or goals on this date</p>
                   <button
                     onClick={() => setShowEventModal(false)}
-                    className="btn-primary"
+                    className="btn-secondary"
                   >
                     Close
                   </button>
@@ -499,26 +596,25 @@ export const StudyCalendar = () => {
           </div>
         </div>
       )}
-    </div>
 
-    {/* Edit Modals */}
-    <div>
-      <EditModal
-        isVisible={!!editingSession}
-        onClose={() => setEditingSession(null)}
-        onSave={handleSaveSession}
-        type="session"
-        data={editingSession}
-      />
+      {/* Edit Modals */}
+      <div>
+        <EditModal
+          isVisible={!!editingSession}
+          onClose={() => setEditingSession(null)}
+          onSave={handleSaveSession}
+          type="session"
+          data={editingSession}
+        />
 
-      <EditModal
-        isVisible={!!editingGoal}
-        onClose={() => setEditingGoal(null)}
-        onSave={handleSaveGoal}
-        type="goal"
-        data={editingGoal}
-      />
-    </div>
+        <EditModal
+          isVisible={!!editingGoal}
+          onClose={() => setEditingGoal(null)}
+          onSave={handleSaveGoal}
+          type="goal"
+          data={editingGoal}
+        />
+      </div>
     </>
   );
 };

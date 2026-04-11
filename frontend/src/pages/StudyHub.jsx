@@ -19,22 +19,12 @@ import { SmartStudyPlanner } from '../components/SmartStudyPlanner';
 export const StudyHub = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [studyStats, setStudyStats] = useState(null);
   const [studyGoals, setStudyGoals] = useState([]);
   const [activeSession, setActiveSession] = useState(null);
   const [sessionTime, setSessionTime] = useState(0);
-  const [focusTime, setFocusTime] = useState(0);
   const [usePomodoro, setUsePomodoro] = useState(false);
   const [showBreakOverlay, setShowBreakOverlay] = useState(false);
-  const [showGoalForm, setShowGoalForm] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
-  const [newGoal, setNewGoal] = useState({
-    subject: '',
-    targetHours: '',
-    deadline: '',
-    priority: 'medium',
-    color: '#3B82F6'
-  });
   const [analytics, setAnalytics] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
 
@@ -400,97 +390,75 @@ export const StudyHub = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex items-center justify-center min-h-[400px]">
         <div className="loading-spinner"></div>
       </div>
     );
   }
 
+  const tabs = [
+    { id: 'analytics', label: 'Analytics' },
+    { id: 'goals', label: 'Goals' },
+    { id: 'calendar', label: 'Calendar' },
+    { id: 'study-tracking', label: 'Study Tracking' },
+    { id: 'settings', label: 'Settings' },
+  ];
+
   return (
-    <div className="space-y-6">
-      {/* Premium Hero Section */}
-      <div className="relative overflow-hidden rounded-3xl">
-        {/* Rich gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-pink-500 via-yellow-200 to-sky-400"></div>
-        {/* Glow effects */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-pink-300/30 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-sky-300/30 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
-        {/* Noise texture overlay */}
-        <div className="absolute inset-0 opacity-30" style={{backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E")'}}></div>
+    <div className="max-w-6xl mx-auto px-8 py-8 animate-fade-in">
+      {/* Alexandria-Style Header */}
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <h1 className="text-editorial text-3xl font-semibold text-gray-900">Study Hub</h1>
+          <p className="text-gray-500 text-sm mt-2">Master your studies with intelligent tracking</p>
+        </div>
         
-        <div className="relative glass-card p-10">
-          <div className="flex items-center justify-between">
-            <div className="max-w-2xl">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-ocean-500 rounded-2xl flex items-center justify-center shadow-lg shadow-pink-500/30">
-                  <span className="text-2xl">📚</span>
-                </div>
-                <span className="text-white font-black text-sm tracking-widest uppercase">Happy Study Suite</span>
+        {/* Session Timer / Start Button */}
+        <div className="flex-shrink-0">
+          {activeSession ? (
+            <div className="clean-card p-4 inline-flex items-center gap-4">
+              <div className="text-center">
+                <div className="text-xs text-gray-400 uppercase tracking-wide mb-1">Session Active</div>
+                <div className="text-2xl font-mono font-semibold text-gray-900">{formatTime(sessionTime)}</div>
               </div>
-              <h1 className="text-5xl font-black text-white mb-4 leading-tight drop-shadow-lg">
-                Study Hub
-              </h1>
-              <p className="text-xl text-white mb-2 font-medium">Master your studies with intelligent tracking and insights</p>
-              <p className="text-yellow-100 font-black">Welcome back, {user?.username || 'Student'}! 🎓</p>
+              <button
+                onClick={endStudySession}
+                className="btn-primary"
+              >
+                End Session
+              </button>
             </div>
-            <div className="text-center">
-              {activeSession ? (
-                <div className="glass-card p-6 border-caramel-400/30 shadow-2xl shadow-coffee-900/50">
-                  <div className="text-sm text-caramel-300 font-semibold mb-2 uppercase tracking-wider">Session Active</div>
-                  <div className="text-4xl font-mono font-bold text-coffee-100 mb-4 tracking-widest">{formatTime(sessionTime)}</div>
-                  <button
-                    onClick={endStudySession}
-                    className="btn-primary w-full text-sm py-3 px-6"
-                  >
-                    End Session
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={startStudySession}
-                  className="btn-primary flex items-center space-x-3 text-lg px-8 py-5 shadow-2xl shadow-caramel-500/30"
-                >
-                  <span className="text-2xl">�</span>
-                  <span className="font-bold">Start Session</span>
-                </button>
-              )}
-            </div>
-          </div>
+          ) : (
+            <button
+              onClick={startStudySession}
+              className="btn-primary flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Start Session
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Premium Floating Pill Tabs */}
-      <div className="glass-card p-2 rounded-full">
-        <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
-          {[
-            { id: 'overview', label: 'Overview', icon: '📊' },
-            { id: 'sessions', label: 'Sessions', icon: '⏱️' },
-            { id: 'goals', label: 'Goals', icon: '🎯' },
-            { id: 'planner', label: 'Planner', icon: '📅' },
-            { id: 'statistics', label: 'Statistics', icon: '📈' },
-            { id: 'analytics', label: 'Analytics', icon: '🧠' },
-            { id: 'education-analytics', label: 'Education', icon: '📊' },
-            { id: 'calendar', label: 'Calendar', icon: '📅' }
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center justify-center space-x-2 px-6 py-3 rounded-full transition-all duration-500 whitespace-nowrap ${
-                activeTab === tab.id
-                  ? 'bg-gradient-to-r from-pink-500 via-pink-400 to-ocean-400 text-white shadow-lg shadow-pink-500/30 scale-105'
-                  : 'text-slate-600 hover:bg-white/40 hover:text-pink-600 hover:scale-105'
-              }`}
-            >
-              <span className="text-lg">{tab.icon}</span>
-              <span className="font-semibold">{tab.label}</span>
-            </button>
-          ))}
-        </div>
+      {/* Alexandria-Style Pill Tabs */}
+      <div className="pill-tabs mb-8">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`pill-tab ${activeTab === tab.id ? 'active' : ''}`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* Tab Content */}
-      {activeTab === 'overview' && (
-        <div className="space-y-6">
+      {activeTab === 'analytics' && (
+        <div className="space-y-8">
           {/* Study Reminders */}
           <StudyReminders 
             goals={studyGoals}
@@ -503,274 +471,311 @@ export const StudyHub = () => {
             }}
           />
 
-          {/* Premium Study Stats Overview */}
+          {/* Study Stats Grid */}
           {analytics && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="stat-card group">
-                <div className="absolute top-4 right-4 w-14 h-14 bg-gradient-to-br from-ocean-500 to-sky-400 rounded-2xl flex items-center justify-center shadow-lg shadow-ocean-200 group-hover:scale-110 transition-transform duration-500">
-                  <span className="text-2xl">📚</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { label: 'Study Hours', value: analytics.totalHours, suffix: 'h', icon: '📚' },
+                { label: 'Study Streak', value: analytics.studyStreak, suffix: ' days', icon: '🔥' },
+                { label: 'Focus Score', value: analytics.averageFocusScore, suffix: '%', icon: '🎯' },
+                { label: 'Active Goals', value: analytics.activeGoals, suffix: '', icon: '📊' }
+              ].map((stat, idx) => (
+                <div key={idx} className="metric-card">
+                  <div>
+                    <div className="metric-label">{stat.label}</div>
+                    <div className="metric-value">{stat.value}{stat.suffix}</div>
+                  </div>
+                  <div className="text-2xl">{stat.icon}</div>
                 </div>
-                <p className="text-slate-500 text-sm font-black uppercase tracking-wider mb-2">Total Study Hours</p>
-                <p className="text-4xl font-black text-slate-800 mb-2">{analytics.totalHours}</p>
-                <div className="flex items-center space-x-2">
-                  <span className="text-emerald-500 text-xs font-black flex items-center">
-                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd"/></svg>
-                    12%
-                  </span>
-                  <span className="text-slate-400 text-xs">from last week</span>
+              ))}
+            </div>
+          )}
+
+          <StudyStreak />
+
+          <StudyAnalytics />
+
+          <PersonalLearningAnalytics />
+
+          {/* Recommendations */}
+          {recommendations.length > 0 && (
+            <div className="clean-card">
+              <div className="p-6 border-b border-gray-100">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                  <h2 className="text-editorial text-lg font-semibold text-gray-900">Personalized Recommendations</h2>
                 </div>
               </div>
-
-              <div className="stat-card group">
-                <div className="absolute top-4 right-4 w-14 h-14 bg-gradient-to-br from-orange-400 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-pink-200 group-hover:scale-110 transition-transform duration-500">
-                  <span className="text-2xl">🔥</span>
-                </div>
-                <p className="text-slate-500 text-sm font-black uppercase tracking-wider mb-2">Study Streak</p>
-                <p className="text-4xl font-black text-slate-800 mb-2">{analytics.studyStreak} <span className="text-2xl text-slate-400">days</span></p>
-                <div className="flex items-center space-x-2">
-                  <span className="text-pink-500 text-xs font-black">Keep it going!</span>
-                </div>
-              </div>
-
-              <div className="stat-card group">
-                <div className="absolute top-4 right-4 w-14 h-14 bg-gradient-to-br from-pink-400 to-ocean-500 rounded-2xl flex items-center justify-center shadow-lg shadow-pink-200 group-hover:scale-110 transition-transform duration-500">
-                  <span className="text-2xl">🎯</span>
-                </div>
-                <p className="text-slate-500 text-sm font-black uppercase tracking-wider mb-2">Focus Score</p>
-                <p className="text-4xl font-black text-slate-800 mb-2">{analytics.averageFocusScore}<span className="text-2xl text-slate-400">%</span></p>
-                <div className="flex items-center space-x-2">
-                  <span className="text-pink-500 text-xs font-black flex items-center">
-                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd"/></svg>
-                    5%
-                  </span>
-                  <span className="text-slate-400 text-xs">improvement</span>
-                </div>
-              </div>
-
-              <div className="stat-card group">
-                <div className="absolute top-4 right-4 w-14 h-14 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-200 group-hover:scale-110 transition-transform duration-500">
-                  <span className="text-2xl">📊</span>
-                </div>
-                <p className="text-slate-500 text-sm font-black uppercase tracking-wider mb-2">Active Goals</p>
-                <p className="text-4xl font-black text-slate-800 mb-2">{analytics.activeGoals}</p>
-                <div className="flex items-center space-x-2">
-                  <span className="text-emerald-600 text-xs font-black">{analytics.completedGoals} completed</span>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {recommendations.slice(0, 6).map((rec, index) => (
+                    <div key={index} className="p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors">
+                      <div className="flex items-start gap-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                          rec.type === 'warning' ? 'bg-amber-100 text-amber-600' :
+                          rec.type === 'success' ? 'bg-emerald-100 text-emerald-600' :
+                          'bg-blue-100 text-blue-600'
+                        }`}>
+                          <span className="text-lg">
+                            {rec.type === 'warning' ? '⚠️' : rec.type === 'success' ? '✅' : '💡'}
+                          </span>
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-medium text-gray-900">{rec.title}</h3>
+                          <p className="text-xs text-gray-500 mt-1 leading-relaxed">{rec.message}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           )}
+        </div>
+      )}
 
-          {/* Study Streak Component */}
-          <StudyStreak />
+      {activeTab === 'goals' && (
+        <div className="space-y-8">
+          {/* Goal Manager - Main Goals Component */}
+          <GoalManager
+            goals={studyGoals}
+            onCreate={createStudyGoal}
+            onUpdate={updateStudyGoal}
+            onDelete={deleteGoal}
+            onProgressUpdate={updateGoalProgress}
+            onSnooze={snoozeGoal}
+          />
 
-          {/* Premium Recommendations */}
-          {recommendations.length > 0 && (
-            <div className="glass-card p-8">
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-ocean-500 rounded-xl flex items-center justify-center shadow-lg">
-                  <span className="text-xl">💡</span>
+          {/* Study Reminders */}
+          <StudyReminders 
+            goals={studyGoals}
+            onSnooze={(reminder) => snoozeGoal(reminder.goal.id)}
+            onComplete={(goal) => {
+              const currentHours = parseFloat(goal.currentHours) || 0;
+              const targetHours = parseFloat(goal.targetHours) || 1;
+              const remainingHours = targetHours - currentHours;
+              updateGoalProgress(goal.id, remainingHours);
+            }}
+          />
+
+          {/* Goal Statistics */}
+          {analytics && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { label: 'Completed Goals', value: analytics.completedGoals, suffix: '', icon: '✅' },
+                { label: 'Overdue Goals', value: analytics.overdueGoals, suffix: '', icon: '⚠️' },
+                { label: 'Active Goals', value: analytics.activeGoals, suffix: '', icon: '🎯' },
+                { label: 'Total Progress', value: studyGoals.length > 0 
+                  ? ((studyGoals.reduce((acc, g) => acc + (g.currentHours / (g.targetHours || 1)), 0) / studyGoals.length) * 100).toFixed(0)
+                  : 0, suffix: '%', icon: '📊' }
+              ].map((stat, idx) => (
+                <div key={idx} className="metric-card">
+                  <div>
+                    <div className="metric-label">{stat.label}</div>
+                    <div className="metric-value">{typeof stat.value === 'number' ? stat.value.toFixed ? stat.value.toFixed(1).replace('.0', '') : stat.value : stat.value}{stat.suffix}</div>
+                  </div>
+                  <div className="text-2xl">{stat.icon}</div>
                 </div>
-                <h2 className="text-2xl font-black text-slate-800">Personalized Recommendations</h2>
+              ))}
+            </div>
+          )}
+
+          {/* Study Tips for Goal Achievement */}
+          <div className="clean-card">
+            <div className="p-6 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
+                <h2 className="text-editorial text-lg font-semibold text-gray-900">Tips for Goal Achievement</h2>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {recommendations.slice(0, 6).map((rec, index) => (
-                  <div key={index} className={`recommendation-card ${
-                    rec.type === 'warning' ? 'border-yellow-400/30 bg-gradient-to-br from-yellow-400/10 via-transparent to-yellow-500/5' :
-                    rec.type === 'success' ? 'border-emerald-400/30 bg-gradient-to-br from-emerald-400/10 via-transparent to-emerald-500/5' :
-                    'border-pink-300/30 bg-gradient-to-br from-pink-300/10 via-sky-50 to-ocean-50'
-                  }`}>
-                    <div className="flex items-start space-x-4">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                        rec.type === 'warning' ? 'bg-yellow-500/20' :
-                        rec.type === 'success' ? 'bg-green-500/20' :
-                        'bg-caramel-500/20'
-                      }`}>
-                        <span className="text-2xl">
-                          {rec.type === 'warning' ? '⚠️' : rec.type === 'success' ? '✅' : '💡'}
-                        </span>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  { icon: '🎯', title: 'Set SMART Goals', desc: 'Make goals Specific, Measurable, Achievable, Relevant, and Time-bound for maximum productivity.' },
+                  { icon: '📊', title: 'Track Progress Daily', desc: 'Regular check-ins help maintain momentum and identify obstacles early.' },
+                  { icon: '🏆', title: 'Celebrate Milestones', desc: 'Reward yourself for completing partial goals to stay motivated.' }
+                ].map((tip, idx) => (
+                  <div key={idx} className="p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-lg flex-shrink-0">
+                        {tip.icon}
                       </div>
                       <div>
-                        <h3 className="font-bold text-coffee-100 mb-2">{rec.title}</h3>
-                        <p className="text-sm text-coffee-300 leading-relaxed">{rec.message}</p>
+                        <h3 className="text-sm font-medium text-gray-900">{tip.title}</h3>
+                        <p className="text-xs text-gray-500 mt-1 leading-relaxed">{tip.desc}</p>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-          )}
+          </div>
         </div>
       )}
 
-      {activeTab === 'sessions' && (
-        <div className="space-y-6">
-          <div className="glass-card p-8">
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-ocean-600 to-sky-400 rounded-2xl flex items-center justify-center shadow-lg">
-                  <span className="text-2xl">⏱️</span>
+      {activeTab === 'calendar' && (
+        <div className="space-y-8">
+          <StudyCalendar />
+          <SmartStudyPlanner />
+        </div>
+      )}
+
+      {activeTab === 'study-tracking' && (
+        <div className="space-y-8">
+          {/* Study Sessions */}
+          <div className="clean-card">
+            <div className="p-6 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <h2 className="text-editorial text-lg font-semibold text-gray-900">Study Sessions</h2>
                 </div>
-                <div>
-                  <h2 className="text-2xl font-black text-slate-800">Study Sessions</h2>
-                  <p className="text-slate-500 text-sm">Track your focused learning time</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <label className="flex items-center space-x-3 px-5 py-3 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 cursor-pointer hover:bg-white/15 transition-all duration-300">
+                <label className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200 transition-colors">
                   <input
                     type="checkbox"
                     checked={usePomodoro}
                     onChange={(e) => setUsePomodoro(e.target.checked)}
-                    className="w-5 h-5 rounded accent-caramel-500"
+                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="text-sm text-coffee-200 font-medium">Use Pomodoro Timer</span>
+                  <span className="text-sm text-gray-600">Use Pomodoro Timer</span>
                 </label>
               </div>
             </div>
             
-            {activeSession ? (
-              <div className="space-y-6">
-                <StudySessionCard
-                  activeSession={activeSession}
-                  sessionTime={sessionTime}
-                  onEndSession={endStudySession}
-                  onTakeBreak={takeBreak}
-                  usePomodoro={usePomodoro}
-                  onTogglePomodoro={() => setUsePomodoro(!usePomodoro)}
-                />
-                
-                {usePomodoro && (
-                  <FocusTimer
-                    isActive={!!activeSession}
-                    onTimeUpdate={setFocusTime}
-                    onPause={() => {
-                      console.log('Pomodoro timer paused');
-                    }}
-                    onResume={() => {
-                      console.log('Pomodoro timer resumed');
-                    }}
-                    onSessionComplete={(type) => {
-                      console.log(`Pomodoro session completed: ${type}`);
-                      if (type === 'focus') {
-                        if (window.studyNotifications) {
-                          window.studyNotifications('Focus session completed! Time for a break! 🎉', 'success');
-                        }
-                      } else {
-                        if (window.studyNotifications) {
-                          window.studyNotifications('Break completed! Ready to focus again! 🚀', 'success');
-                        }
-                      }
-                    }}
+            <div className="p-6">
+              {activeSession ? (
+                <div className="space-y-6">
+                  <StudySessionCard
+                    activeSession={activeSession}
+                    sessionTime={sessionTime}
+                    onEndSession={endStudySession}
+                    onTakeBreak={takeBreak}
+                    usePomodoro={usePomodoro}
+                    onTogglePomodoro={() => setUsePomodoro(!usePomodoro)}
                   />
-                )}
-              </div>
-            ) : (
-              <div className="text-center py-12 glass-card">
-                <div className="w-20 h-20 bg-gradient-to-br from-pink-500 to-ocean-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-pink-200">
-                  <span className="text-4xl">☕</span>
+                  
+                  {usePomodoro && (
+                    <FocusTimer
+                      isActive={!!activeSession}
+                      onPause={() => console.log('Pomodoro timer paused')}
+                      onResume={() => console.log('Pomodoro timer resumed')}
+                      onSessionComplete={(type) => {
+                        if (window.studyNotifications) {
+                          window.studyNotifications(
+                            type === 'focus' 
+                              ? 'Focus session completed! Time for a break!' 
+                              : 'Break completed! Ready to focus again!', 
+                            'success'
+                          );
+                        }
+                      }}
+                    />
+                  )}
                 </div>
-                <p className="text-xl text-slate-700 mb-6 font-black">No active study session</p>
-                <button
-                  onClick={startStudySession}
-                  className="btn-primary text-lg px-8 py-4"
-                >
-                  Start a Study Session
-                </button>
-              </div>
-            )}
+              ) : (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-600 mb-4">No active study session</p>
+                  <button
+                    onClick={startStudySession}
+                    className="btn-primary"
+                  >
+                    Start a Study Session
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
           
           <StudyStreak />
+          <EducationAnalyticsDashboard />
         </div>
       )}
 
-      {activeTab === 'goals' && (
-        <GoalManager
-          goals={studyGoals}
-          onCreate={createStudyGoal}
-          onUpdate={updateStudyGoal}
-          onDelete={deleteGoal}
-          onProgressUpdate={updateGoalProgress}
-          onSnooze={snoozeGoal}
-        />
-      )}
-
-      {activeTab === 'analytics' && <StudyAnalytics />}
-      {activeTab === 'statistics' && <StudyStatistics />}
-      {activeTab === 'calendar' && <StudyCalendar />}
-
-      {activeTab === 'education-analytics' && (
-        <PersonalLearningAnalytics />
-      )}
-
-      {activeTab === 'planner' && (
-        <SmartStudyPlanner />
-      )}
-
-      {/* Debug Panel - Remove in production */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="bg-gray-100 dark:bg-gray-900 rounded-lg p-4 border border-gray-300 dark:border-gray-700">
-          <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Debug Info</h3>
-          <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-            <div>Loading: {loading ? 'Yes' : 'No'}</div>
-            <div>Active Session: {activeSession ? `ID: ${activeSession.id}` : 'None'}</div>
-            <div>Goals Count: {studyGoals.length}</div>
-            <div>Analytics: {analytics ? 'Loaded' : 'Not loaded'}</div>
-            <div>Current Tab: {activeTab}</div>
-            <div>User ID: {user?.id || 'Not loaded'}</div>
-          </div>
-        </div>
-      )}
-
-      {/* Premium Study Tips */}
-      <div className="glass-card p-8">
-        <div className="flex items-center space-x-4 mb-8">
-          <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-ocean-500 rounded-2xl flex items-center justify-center shadow-lg">
-            <span className="text-2xl">✨</span>
-          </div>
-          <div>
-            <h2 className="text-2xl font-black text-slate-800">Study Tips & Techniques</h2>
-            <p className="text-slate-500 text-sm">Proven methods to enhance your learning</p>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="recommendation-card border-caramel-500/20">
-            <div className="flex items-start space-x-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-coffee-600 to-caramel-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-coffee-900/30">
-                <span className="text-2xl">⏰</span>
+      {activeTab === 'settings' && (
+        <div className="space-y-8">
+          <div className="clean-card p-6">
+            <h2 className="text-editorial text-lg font-semibold text-gray-900 mb-6">Study Settings</h2>
+            
+            <div className="space-y-6">
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <h3 className="text-sm font-medium text-gray-900">Pomodoro Timer</h3>
+                  <p className="text-xs text-gray-500 mt-1">Use 25/5 minute focus/break cycles</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={usePomodoro}
+                    onChange={(e) => setUsePomodoro(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
               </div>
-              <div>
-                <h3 className="font-bold text-coffee-100 mb-2 text-lg">Pomodoro Technique</h3>
-                <p className="text-coffee-300 leading-relaxed">Study for 25 minutes, then take a 5-minute break. Repeat this cycle to maintain peak focus and prevent burnout.</p>
+
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <h3 className="text-sm font-medium text-gray-900">Break Reminders</h3>
+                  <p className="text-xs text-gray-500 mt-1">Get notified when it's time for a break</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" defaultChecked className="sr-only peer" />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <h3 className="text-sm font-medium text-gray-900">Daily Goal Alerts</h3>
+                  <p className="text-xs text-gray-500 mt-1">Reminders for daily study targets</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" defaultChecked className="sr-only peer" />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <h3 className="text-sm font-medium text-gray-900">Weekly Reports</h3>
+                  <p className="text-xs text-gray-500 mt-1">Receive weekly progress summaries</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" className="sr-only peer" />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
               </div>
             </div>
           </div>
 
-          <div className="recommendation-card border-green-500/20">
-            <div className="flex items-start space-x-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-green-900/30">
-                <span className="text-2xl">🎯</span>
-              </div>
-              <div>
-                <h3 className="font-bold text-coffee-100 mb-2 text-lg">Set SMART Goals</h3>
-                <p className="text-coffee-300 leading-relaxed">Make goals Specific, Measurable, Achievable, Relevant, and Time-bound for maximum productivity.</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="recommendation-card border-caramel-500/20">
-            <div className="flex items-start space-x-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-caramel-400 to-gold-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-caramel-900/30">
-                <span className="text-2xl">🧠</span>
-              </div>
-              <div>
-                <h3 className="font-bold text-coffee-100 mb-2 text-lg">Active Recall</h3>
-                <p className="text-coffee-300 leading-relaxed">Test yourself regularly instead of just re-reading material. This strengthens neural pathways.</p>
+          {/* User Info */}
+          <div className="clean-card p-6">
+            <h3 className="text-sm font-semibold text-gray-900 mb-4">Account</h3>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium">
+                  {user?.username?.charAt(0).toUpperCase() || 'U'}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{user?.username || 'User'}</p>
+                  <p className="text-xs text-gray-500">{user?.email || 'user@example.com'}</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Notifications */}
       <StudyNotifications />
